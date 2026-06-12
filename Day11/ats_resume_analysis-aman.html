@@ -1,0 +1,166 @@
+
+<style>
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .section{margin-bottom:2rem}
+  .section-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin:0 0 12px}
+  .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem}
+  .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:2rem}
+  .metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.875rem 1rem}
+  .metric-label{font-size:12px;color:var(--color-text-secondary);margin:0 0 4px}
+  .metric-value{font-size:22px;font-weight:500;margin:0;color:var(--color-text-primary)}
+  .metric-value.green{color:#3B6D11}
+  .metric-value.amber{color:#854F0B}
+  .metric-value.red{color:#A32D2D}
+  @media(prefers-color-scheme:dark){
+    .metric-value.green{color:#97C459}
+    .metric-value.amber{color:#EF9F27}
+    .metric-value.red{color:#F09595}
+  }
+  .score-ring-wrap{display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem}
+  .score-ring-text{flex:1}
+  .score-title{font-size:18px;font-weight:500;color:var(--color-text-primary);margin:0 0 4px}
+  .score-sub{font-size:13px;color:var(--color-text-secondary);margin:0}
+  .kw-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kw-item{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary)}
+  .kw-label{flex:1;color:var(--color-text-primary)}
+  .badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap}
+  .badge-match{background:#EAF3DE;color:#3B6D11}
+  .badge-partial{background:#FAEEDA;color:#854F0B}
+  .badge-miss{background:#FCEBEB;color:#A32D2D}
+  @media(prefers-color-scheme:dark){
+    .badge-match{background:#27500A;color:#C0DD97}
+    .badge-partial{background:#633806;color:#FAC775}
+    .badge-miss{background:#501313;color:#F7C1C1}
+  }
+  .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .dot-green{background:#639922}
+  .dot-amber{background:#BA7517}
+  .dot-red{background:#E24B4A}
+  .gap-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .gap-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;padding:8px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary)}
+  .gap-item i{margin-top:1px;font-size:16px;flex-shrink:0}
+  .gap-text{flex:1;color:var(--color-text-primary)}
+  .gap-text span{color:var(--color-text-secondary);display:block;font-size:12px;margin-top:2px}
+  .strength-item{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+  .strength-item:last-child{border-bottom:none}
+  .bar-bg{flex:1;height:6px;border-radius:3px;background:var(--color-border-tertiary);overflow:hidden}
+  .bar-fill{height:100%;border-radius:3px}
+  .bar-label{font-size:12px;color:var(--color-text-secondary);min-width:28px;text-align:right}
+</style>
+
+<h2 class="sr-only">ATS analysis of Mohammad Aman's resume against the Data Analyst job description</h2>
+
+<div style="padding:1rem 0 0">
+
+  <div class="metric-grid">
+    <div class="metric">
+      <p class="metric-label">ATS score</p>
+      <p class="metric-value green">78<span style="font-size:14px;font-weight:400">/100</span></p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">Keywords matched</p>
+      <p class="metric-value green">8<span style="font-size:14px;font-weight:400">/11</span></p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">Required skills</p>
+      <p class="metric-value green">5<span style="font-size:14px;font-weight:400">/6</span></p>
+    </div>
+    <div class="metric">
+      <p class="metric-label">Preferred skills</p>
+      <p class="metric-value amber">2<span style="font-size:14px;font-weight:400">/3</span></p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:2rem">
+
+    <div class="section">
+      <p class="section-title">Keyword coverage</p>
+      <div class="card" style="padding:.75rem 1rem">
+        <div class="kw-grid">
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">SQL</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">Excel</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">Power BI</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">Data analysis</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">Data visualization</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">Python</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">ETL concepts</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-green"></div><span class="kw-label">KPI definition</span><span class="badge badge-match">matched</span></div>
+          <div class="kw-item"><div class="dot dot-amber"></div><span class="kw-label">Statistics</span><span class="badge badge-partial">partial</span></div>
+          <div class="kw-item"><div class="dot dot-amber"></div><span class="kw-label">Tableau</span><span class="badge badge-partial">partial</span></div>
+          <div class="kw-item"><div class="dot dot-red"></div><span class="kw-label">Machine learning</span><span class="badge badge-miss">missing</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <p class="section-title">Skill category breakdown</p>
+      <div class="card" style="padding:.75rem 1rem">
+        <div class="strength-item"><span style="font-size:13px;color:var(--color-text-primary);min-width:130px">Dashboard / BI</span><div class="bar-bg"><div class="bar-fill" style="width:95%;background:#639922"></div></div><span class="bar-label">95%</span></div>
+        <div class="strength-item"><span style="font-size:13px;color:var(--color-text-primary);min-width:130px">SQL & querying</span><div class="bar-bg"><div class="bar-fill" style="width:80%;background:#639922"></div></div><span class="bar-label">80%</span></div>
+        <div class="strength-item"><span style="font-size:13px;color:var(--color-text-primary);min-width:130px">Data cleaning</span><div class="bar-bg"><div class="bar-fill" style="width:85%;background:#639922"></div></div><span class="bar-label">85%</span></div>
+        <div class="strength-item"><span style="font-size:13px;color:var(--color-text-primary);min-width:130px">Python</span><div class="bar-bg"><div class="bar-fill" style="width:65%;background:#BA7517"></div></div><span class="bar-label">65%</span></div>
+        <div class="strength-item"><span style="font-size:13px;color:var(--color-text-primary);min-width:130px">Statistics</span><div class="bar-bg"><div class="bar-fill" style="width:45%;background:#BA7517"></div></div><span class="bar-label">45%</span></div>
+        <div class="strength-item"><span style="font-size:13px;color:var(--color-text-primary);min-width:130px">Machine learning</span><div class="bar-bg"><div class="bar-fill" style="width:25%;background:#E24B4A"></div></div><span class="bar-label">25%</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <p class="section-title">Gaps & recommendations</p>
+    <ul class="gap-list">
+      <li class="gap-item">
+        <i class="ti ti-chart-bar" style="color:#BA7517" aria-hidden="true"></i>
+        <div class="gap-text">No formal statistics coursework or projects listed
+          <span>Add a mention of descriptive statistics or any coursework with analytical methods — even one line in the summary helps ATS parsers.</span>
+        </div>
+      </li>
+      <li class="gap-item">
+        <i class="ti ti-layout-dashboard" style="color:#BA7517" aria-hidden="true"></i>
+        <div class="gap-text">Tableau absent — JD lists Power BI/Tableau as one requirement
+          <span>Power BI alone partially satisfies this. A free Tableau Public project on any Kaggle dataset would fully close this gap.</span>
+        </div>
+      </li>
+      <li class="gap-item">
+        <i class="ti ti-brain" style="color:#E24B4A" aria-hidden="true"></i>
+        <div class="gap-text">Machine learning fundamentals not surfaced (preferred skill)
+          <span>Your AI/ML certifications cover this conceptually — explicitly mention "machine learning fundamentals" in the skills section or summary to trigger ATS parsers.</span>
+        </div>
+      </li>
+      <li class="gap-item">
+        <i class="ti ti-briefcase" style="color:#E24B4A" aria-hidden="true"></i>
+        <div class="gap-text">Zero professional work experience
+          <span>The biggest ATS and recruiter risk. Internship, freelance project, or a live Kaggle/GitHub portfolio would significantly strengthen this profile.</span>
+        </div>
+      </li>
+      <li class="gap-item">
+        <i class="ti ti-brand-github" style="color:#5F5E5A" aria-hidden="true"></i>
+        <div class="gap-text">No GitHub or portfolio link
+          <span>ATS systems and recruiters increasingly scan for public proof-of-work. Add a GitHub profile with your Power BI/Python projects.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <p class="section-title">Recruiter-readability signals</p>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+      <div class="card" style="text-align:center;padding:1rem">
+        <i class="ti ti-check" style="font-size:20px;color:#639922" aria-hidden="true"></i>
+        <p style="font-size:13px;font-weight:500;margin:6px 0 2px;color:var(--color-text-primary)">ATS-safe format</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);margin:0">No tables or graphics that confuse parsers</p>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem">
+        <i class="ti ti-check" style="font-size:20px;color:#639922" aria-hidden="true"></i>
+        <p style="font-size:13px;font-weight:500;margin:6px 0 2px;color:var(--color-text-primary)">Reverse-chron order</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);margin:0">Education and projects in correct order</p>
+      </div>
+      <div class="card" style="text-align:center;padding:1rem">
+        <i class="ti ti-alert-triangle" style="font-size:20px;color:#BA7517" aria-hidden="true"></i>
+        <p style="font-size:13px;font-weight:500;margin:6px 0 2px;color:var(--color-text-primary)">No quantified metrics</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);margin:0">Impact numbers increase recruiter engagement</p>
+      </div>
+    </div>
+  </div>
+
+</div>
