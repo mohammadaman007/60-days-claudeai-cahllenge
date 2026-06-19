@@ -1,0 +1,186 @@
+
+<style>
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.6px; color: var(--color-text-tertiary); text-transform: uppercase; margin: 1.5rem 0 10px; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+.card-featured { border: 2px solid #7F77DD; }
+.badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+.badge-purple { background: #EEEDFE; color: #3C3489; }
+.badge-info { background: var(--color-background-info); color: var(--color-text-info); }
+.badge-success { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-warning { background: var(--color-background-warning); color: var(--color-text-warning); }
+.badge-gray { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.card-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+.card-sub { font-size: 13px; color: var(--color-text-secondary); margin: 0 0 10px; line-height: 1.5; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mini-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+.mini-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+.mini-val { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+.bar-wrap { margin-bottom: 10px; }
+.bar-label-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.bar-label-row span:last-child { font-weight: 500; color: var(--color-text-primary); }
+.bar-bg { height: 8px; background: var(--color-background-secondary); border-radius: 4px; overflow: hidden; }
+.bar-fill-blue { height: 100%; border-radius: 4px; background: #378ADD; }
+.bar-fill-purple { height: 100%; border-radius: 4px; background: #7F77DD; }
+.bar-fill-teal { height: 100%; border-radius: 4px; background: #1D9E75; }
+.compat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.compat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px; text-align: center; }
+.compat-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.compat-pct { font-size: 28px; font-weight: 500; margin-bottom: 4px; }
+.compat-desc { font-size: 11px; color: var(--color-text-secondary); line-height: 1.4; }
+.trait-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+.trait-row:last-child { border-bottom: none; }
+.trait-name { color: var(--color-text-secondary); }
+.trait-val { font-weight: 500; }
+.trait-m { color: #1D9E75; }
+.trait-r { color: #378ADD; }
+.trait-b { color: #7F77DD; }
+.rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rec-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+.rec-icon { font-size: 16px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.rec-type { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+.rec-val { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.insight-block { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; margin-bottom: 8px; }
+.insight-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+.insight-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+.hero-band { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1rem; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 0.5rem; }
+.hero-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+.hero-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1rem 0; }
+.archetype-highlight { background: #EEEDFE; border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; border: 0.5px solid #AFA9EC; }
+.archetype-title { font-size: 18px; font-weight: 500; color: #3C3489; margin: 4px 0 6px; }
+.archetype-desc { font-size: 13px; color: #534AB7; line-height: 1.6; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: #CECBF6; color: #26215C; }
+</style>
+
+<h2 class="sr-only">Your complete Football Intelligence Profile — personality match, archetype, predictions and IQ score</h2>
+
+<div style="padding: 1rem 0 0;">
+
+<div class="hero-band">
+  <div>
+    <div class="hero-title"><i class="ti ti-id-badge" style="font-size:18px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Your Football Intelligence Profile</div>
+    <div class="hero-sub">Stage 3 complete · Full profile generated</div>
+  </div>
+  <div class="badge badge-purple">All 3 stages done</div>
+</div>
+
+<div class="section-label">Stage 3 — Messi vs Ronaldo compatibility</div>
+
+<div class="compat-grid">
+  <div class="compat-card">
+    <div class="compat-name">Lionel Messi</div>
+    <div class="compat-pct" style="color:#1D9E75;">58%</div>
+    <div class="compat-desc">Instinct-led, creative, quiet leader, team-elevating</div>
+  </div>
+  <div class="compat-card">
+    <div class="compat-name">Cristiano Ronaldo</div>
+    <div class="compat-pct" style="color:#378ADD;">72%</div>
+    <div class="compat-desc">Driven, disciplined, competitive, results-focused</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="badge badge-info">Primary match — Ronaldo (72%)</div>
+  <div class="card-title">You lean Ronaldo in mindset and method</div>
+  <div class="card-sub">Your answers reveal a strong competitive engine, a preference for hard work over pure instinct, and a results-oriented decision-making style — all hallmarks of Ronaldo's personality.</div>
+  <div class="trait-row"><span class="trait-name">Discipline</span><span class="trait-val trait-r">Structured & optimised — Ronaldo trait</span></div>
+  <div class="trait-row"><span class="trait-name">Work ethic</span><span class="trait-val trait-r">Rated 4/5 — effort over raw talent</span></div>
+  <div class="trait-row"><span class="trait-name">Competitiveness</span><span class="trait-val trait-r">Rated 4/5 — intensely driven</span></div>
+  <div class="trait-row"><span class="trait-name">Decision-making</span><span class="trait-val trait-r">Calculated, analytical, prepared</span></div>
+  <div class="trait-row"><span class="trait-name">High-pressure response</span><span class="trait-val trait-r">Love the spotlight, feed off energy</span></div>
+  <div class="trait-row"><span class="trait-name">Failure response</span><span class="trait-val trait-r">Use it as fuel — train harder</span></div>
+</div>
+
+<div class="card">
+  <div class="badge badge-success">Messi echo (58%)</div>
+  <div class="card-title">But your soul is quietly Messi</div>
+  <div class="card-sub">Despite your Ronaldo-dominant drive, three key traits align with Messi: your ambition is driven by love and flow rather than external validation, your self-image is that of a creative free spirit, and you lead quietly by elevating others rather than commanding loudly.</div>
+  <div class="trait-row"><span class="trait-name">Ambition source</span><span class="trait-val trait-m">Love & flow — Messi trait</span></div>
+  <div class="trait-row"><span class="trait-name">Daily approach</span><span class="trait-val trait-m">Instinct + room for spontaneity</span></div>
+  <div class="trait-row"><span class="trait-name">Self-image at best</span><span class="trait-val trait-m">Creative free spirit — Messi trait</span></div>
+  <div class="trait-row"><span class="trait-name">Risk tolerance</span><span class="trait-val trait-b">Balanced (3/5) — neither extreme</span></div>
+</div>
+
+<div class="section-label">Your football personality archetype</div>
+
+<div class="archetype-highlight">
+  <div class="badge badge-purple">Your archetype</div>
+  <div class="archetype-title">Relentless Competitor</div>
+  <div class="archetype-desc">You combine a deep inner creative spark with an outward drive to compete, win and outperform. You don't just want to participate — you want to matter. You prepare seriously, thrive under pressure, and use setbacks as rocket fuel rather than anchors. Unlike a pure Ronaldo archetype, your creativity and flow-driven ambition mean you win beautifully, not just brutally.</div>
+  <div class="tag-row">
+    <div class="tag">Pressure performer</div>
+    <div class="tag">Hard-working</div>
+    <div class="tag">Analytically creative</div>
+    <div class="tag">Results-driven</div>
+    <div class="tag">Quietly ambitious</div>
+    <div class="tag">Resilient</div>
+  </div>
+</div>
+
+<div class="section-label">Your recommendations</div>
+<div class="rec-grid">
+  <div class="rec-card">
+    <div class="rec-icon"><i class="ti ti-user" aria-hidden="true"></i></div>
+    <div class="rec-type">Player to follow</div>
+    <div class="rec-val">Jude Bellingham</div>
+    <div class="mini-val" style="font-size:11px; color:var(--color-text-secondary); margin-top:3px;">Creative engine with fierce competitive drive — your archetype in football form</div>
+  </div>
+  <div class="rec-card">
+    <div class="rec-icon"><i class="ti ti-shield" aria-hidden="true"></i></div>
+    <div class="rec-type">Club to explore</div>
+    <div class="rec-val">Real Madrid</div>
+    <div class="mini-val" style="font-size:11px; color:var(--color-text-secondary); margin-top:3px;">The ultimate club for relentless competitors who also play with flair and ambition</div>
+  </div>
+  <div class="rec-card">
+    <div class="rec-icon"><i class="ti ti-flag" aria-hidden="true"></i></div>
+    <div class="rec-type">National team to follow</div>
+    <div class="rec-val">France</div>
+    <div class="mini-val" style="font-size:11px; color:var(--color-text-secondary); margin-top:3px;">Blends structured discipline with explosive creativity — mirrors your dual personality</div>
+  </div>
+  <div class="rec-card">
+    <div class="rec-icon"><i class="ti ti-sword" aria-hidden="true"></i></div>
+    <div class="rec-type">Rivalry to explore</div>
+    <div class="rec-val">Messi vs Ronaldo era</div>
+    <div class="mini-val" style="font-size:11px; color:var(--color-text-secondary); margin-top:3px;">You carry traits of both legends — this rivalry will feel deeply personal to you</div>
+  </div>
+</div>
+
+<div class="section-label">Full intelligence profile summary</div>
+
+<div class="card">
+  <div class="bar-wrap">
+    <div class="bar-label-row"><span>Football Awareness Score</span><span>70 / 100</span></div>
+    <div class="bar-bg"><div class="bar-fill-teal" style="width:70%"></div></div>
+  </div>
+  <div class="bar-wrap">
+    <div class="bar-label-row"><span>Ronaldo compatibility</span><span>72%</span></div>
+    <div class="bar-bg"><div class="bar-fill-blue" style="width:72%"></div></div>
+  </div>
+  <div class="bar-wrap">
+    <div class="bar-label-row"><span>Messi compatibility</span><span>58%</span></div>
+    <div class="bar-bg"><div class="bar-fill-teal" style="width:58%"></div></div>
+  </div>
+  <div class="divider"></div>
+  <div class="trait-row"><span class="trait-name">Fan classification</span><span class="trait-val">Football Follower</span></div>
+  <div class="trait-row"><span class="trait-name">Personality archetype</span><span class="trait-val">Relentless Competitor</span></div>
+  <div class="trait-row"><span class="trait-name">WC 2026 predicted winner</span><span class="trait-val">Argentina (72% confidence)</span></div>
+  <div class="trait-row"><span class="trait-name">Dark horse pick</span><span class="trait-val">Germany</span></div>
+  <div class="trait-row"><span class="trait-name">Player to watch</span><span class="trait-val">Jude Bellingham</span></div>
+</div>
+
+<div class="section-label">Key insights</div>
+<div class="insight-block">
+  <div class="insight-label"><i class="ti ti-sparkles" style="font-size:12px" aria-hidden="true"></i> The paradox that defines you</div>
+  <div class="insight-text">You are driven like Ronaldo but dream like Messi. Your engine is fuelled by competition and hard work (Q6: 4/5, Q8: 4/5), yet your deepest ambition is to do something you love and make it look effortless. This is rare — most people are one or the other. You're someone who could out-grind everyone in the room and still make it look natural.</div>
+</div>
+<div class="insight-block">
+  <div class="insight-label"><i class="ti ti-bulb" style="font-size:12px" aria-hidden="true"></i> Your competitive edge</div>
+  <div class="insight-text">You thrive under pressure (Q7: love the spotlight) and turn failure into fuel (Q9: use it as motivation). This combination — pressure resilience + failure response — is what separates elite performers from good ones. In football terms, you're the player who wants the penalty in the 90th minute.</div>
+</div>
+<div class="insight-block">
+  <div class="insight-label"><i class="ti ti-heart" style="font-size:12px" aria-hidden="true"></i> Hidden Messi within</div>
+  <div class="insight-text">Despite your Ronaldo-dominant profile, your self-image (Q12: creative free spirit) and ambition source (Q1: love and flow) reveal a Messi soul underneath. You want to win, but not at the cost of losing yourself. You'd rather be brilliant on your own terms than grinding for records alone.</div>
+</div>
+
+</div>

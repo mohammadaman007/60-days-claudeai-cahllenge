@@ -1,0 +1,157 @@
+
+<style>
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.6px; color: var(--color-text-tertiary); text-transform: uppercase; margin: 0 0 10px; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+.card-featured { border: 2px solid var(--color-border-info); }
+.badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+.badge-info { background: var(--color-background-info); color: var(--color-text-info); }
+.badge-success { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-warning { background: var(--color-background-warning); color: var(--color-text-warning); }
+.badge-gray { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.card-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+.card-sub { font-size: 13px; color: var(--color-text-secondary); margin: 0 0 12px; }
+.conf-bar-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.conf-bar-bg { flex: 1; height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
+.conf-bar-fill { height: 100%; border-radius: 3px; }
+.conf-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); min-width: 40px; text-align: right; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mini-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+.mini-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+.mini-val { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+.divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 10px 0; }
+.player-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.player-row:last-child { border-bottom: none; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+.player-info { flex: 1; }
+.player-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.player-meta { font-size: 12px; color: var(--color-text-secondary); }
+.player-stat { font-size: 13px; font-weight: 500; color: var(--color-text-info); }
+.stat-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; }
+.stat-row span:first-child { color: var(--color-text-secondary); }
+.stat-row span:last-child { font-weight: 500; color: var(--color-text-primary); }
+.header-band { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.header-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+.header-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #E24B4A; display: inline-block; margin-right: 5px; }
+</style>
+
+<h2 class="sr-only">FIFA World Cup 2026 Prediction Report based on historical and live tournament data</h2>
+
+<div style="padding: 1rem 0 0;">
+
+<div class="header-band">
+  <div>
+    <div class="header-title"><i class="ti ti-trophy" style="font-size:18px; vertical-align:-2px; margin-right:6px;" aria-hidden="true"></i>World Cup 2026 — Prediction Report</div>
+    <div class="header-sub"><span class="live-dot"></span>Live data as of June 17, 2026 · Group Stage in progress</div>
+  </div>
+  <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 6px 12px; font-size: 12px; color: var(--color-text-secondary);">21 matches played</div>
+</div>
+
+<div class="section-label">Most likely winner</div>
+<div class="card card-featured">
+  <div class="badge badge-info">Predicted champion</div>
+  <div class="card-title">Argentina</div>
+  <div class="card-sub">FIFA Rank #1 · Defending World Cup champions</div>
+  <div class="conf-bar-wrap">
+    <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:72%; background:#378ADD;"></div></div>
+    <div class="conf-label">72%</div>
+  </div>
+  <div class="row2">
+    <div class="mini-card">
+      <div class="mini-label"><i class="ti ti-check" style="font-size:12px" aria-hidden="true"></i> Evidence for</div>
+      <div class="mini-val">Defending champs. Ranked #1 globally. Form score 92/100. Won 3-0 vs Algeria in Group J opener. Historical win rate 68% (last 50 matches).</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-label"><i class="ti ti-alert-triangle" style="font-size:12px" aria-hidden="true"></i> Key risks</div>
+      <div class="mini-val">Post-Messi era pressure. Spain breathing down their neck (ranked #2, form score 91). Knockout-stage margins are razor-thin.</div>
+    </div>
+  </div>
+  <div class="stat-row" style="margin-top:10px;"><span>Historical goals scored (last 50 games)</span><span>98 goals</span></div>
+  <div class="stat-row"><span>Goals conceded (last 50 games)</span><span>32 — 2nd best on record</span></div>
+</div>
+
+<div class="section-label" style="margin-top:1.5rem;">Runner-up prediction</div>
+<div class="card">
+  <div class="badge badge-success">Runner-up pick</div>
+  <div class="card-title">France</div>
+  <div class="card-sub">FIFA Rank #3 · 2018 winners, 2022 runners-up</div>
+  <div class="conf-bar-wrap">
+    <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:63%; background:#1D9E75;"></div></div>
+    <div class="conf-label">63%</div>
+  </div>
+  <div class="row2">
+    <div class="mini-card">
+      <div class="mini-label"><i class="ti ti-check" style="font-size:12px" aria-hidden="true"></i> Evidence for</div>
+      <div class="mini-val">Won their Group I opener 2-0 vs Senegal. Two consecutive finals. Mbappé in peak form (95 rating, 22 goals). Strong 90/100 form score.</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-label"><i class="ti ti-alert-triangle" style="font-size:12px" aria-hidden="true"></i> Key risks</div>
+      <div class="mini-val">Lost the 2022 final to Argentina on penalties. History of stumbling in tournaments after the group stage. Tactical predictability.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label" style="margin-top:1.5rem;">Dark horse nation</div>
+<div class="card">
+  <div class="badge badge-warning">Dark horse</div>
+  <div class="card-title">Germany</div>
+  <div class="card-sub">FIFA Rank #9 · Hungry for redemption</div>
+  <div class="conf-bar-wrap">
+    <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:41%; background:#BA7517;"></div></div>
+    <div class="conf-label">41%</div>
+  </div>
+  <div class="row2">
+    <div class="mini-card">
+      <div class="mini-label"><i class="ti ti-check" style="font-size:12px" aria-hidden="true"></i> Evidence for</div>
+      <div class="mini-val">Demolished Curaçao 7-1 in their opener — most emphatic statement of the tournament so far. Form score 87. 4-time World Cup winners.</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-label"><i class="ti ti-alert-triangle" style="font-size:12px" aria-hidden="true"></i> Key risks</div>
+      <div class="mini-val">Recent World Cups have been brutal — crashed out in group stages in 2018. Ranked 9th, not yet proven against elite sides in 2026.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label" style="margin-top:1.5rem;">Players to watch</div>
+<div class="card">
+  <div class="player-row">
+    <div class="avatar" style="background:#E6F1FB; color:#0C447C;">KM</div>
+    <div class="player-info">
+      <div class="player-name">Kylian Mbappé</div>
+      <div class="player-meta">France · Forward</div>
+    </div>
+    <div class="player-stat">95 rating · 22G / 8A</div>
+  </div>
+  <div class="player-row">
+    <div class="avatar" style="background:#E1F5EE; color:#085041;">LM</div>
+    <div class="player-info">
+      <div class="player-name">Lionel Messi</div>
+      <div class="player-meta">Argentina · Forward</div>
+    </div>
+    <div class="player-stat">96 rating · 20G / 12A</div>
+  </div>
+  <div class="player-row">
+    <div class="avatar" style="background:#EAF3DE; color:#27500A;">EH</div>
+    <div class="player-info">
+      <div class="player-name">Erling Haaland</div>
+      <div class="player-meta">Norway · Forward</div>
+    </div>
+    <div class="player-stat">94 rating · 25G / 4A</div>
+  </div>
+  <div class="player-row">
+    <div class="avatar" style="background:#FAEEDA; color:#633806;">JB</div>
+    <div class="player-info">
+      <div class="player-name">Jude Bellingham</div>
+      <div class="player-meta">England · Midfielder</div>
+    </div>
+    <div class="player-stat">91 rating · 10G / 9A</div>
+  </div>
+</div>
+
+<div style="margin-top: 1.5rem; text-align: center;">
+  <button type="button" onclick="sendPrompt('Ready for Stage 2 — start my Football IQ Quiz!')" style="padding: 10px 28px; border-radius: var(--border-radius-md); background: transparent; border: 0.5px solid var(--color-border-secondary); font-size: 14px; font-weight: 500; color: var(--color-text-primary); cursor: pointer;">
+    Continue to Football IQ Quiz ↗
+  </button>
+</div>
+
+</div>
