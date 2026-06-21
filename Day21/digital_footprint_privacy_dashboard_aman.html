@@ -1,0 +1,665 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .dash { padding: 1.5rem 0; max-width: 680px; }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 8px; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  .sec { margin-bottom: 1.5rem; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+  .badge-red { background: #FCEBEB; color: #A32D2D; }
+  .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .badge-green { background: #EAF3DE; color: #3B6D11; }
+  .badge-blue { background: #E6F1FB; color: #185FA5; }
+  .badge-purple { background: #EEEDFE; color: #534AB7; }
+  .badge-gray { background: #F1EFE8; color: #5F5E5A; }
+  @media (prefers-color-scheme: dark) {
+    .badge-red { background: #501313; color: #F7C1C1; }
+    .badge-amber { background: #412402; color: #FAC775; }
+    .badge-green { background: #173404; color: #C0DD97; }
+    .badge-blue { background: #042C53; color: #B5D4F4; }
+    .badge-purple { background: #26215C; color: #CECBF6; }
+    .badge-gray { background: #2C2C2A; color: #D3D1C7; }
+  }
+  .score-ring { position: relative; display: flex; align-items: center; justify-content: center; }
+  .progress-bar { height: 6px; border-radius: 3px; background: var(--color-background-secondary); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .risk-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .risk-label { font-size: 13px; color: var(--color-text-secondary); min-width: 120px; }
+  .heatmap-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .heat-cell { border-radius: var(--border-radius-md); padding: 8px 6px; text-align: center; font-size: 11px; font-weight: 500; }
+  .heat-1 { background: #EAF3DE; color: #3B6D11; }
+  .heat-2 { background: #FAEEDA; color: #854F0B; }
+  .heat-3 { background: #FAC775; color: #633806; }
+  .heat-4 { background: #F09595; color: #791F1F; }
+  .heat-5 { background: #E24B4A; color: #FCEBEB; }
+  @media (prefers-color-scheme: dark) {
+    .heat-1 { background: #173404; color: #C0DD97; }
+    .heat-2 { background: #412402; color: #FAC775; }
+    .heat-3 { background: #633806; color: #FAEEDA; }
+    .heat-4 { background: #791F1F; color: #F7C1C1; }
+    .heat-5 { background: #A32D2D; color: #FCEBEB; }
+  }
+  .matrix-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .matrix-table th { text-align: left; padding: 6px 8px; font-weight: 500; color: var(--color-text-secondary); font-size: 11px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .matrix-table td { padding: 7px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); vertical-align: middle; color: var(--color-text-primary); }
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot-red { background: #E24B4A; }
+  .dot-amber { background: #EF9F27; }
+  .dot-green { background: #639922; }
+  .asset-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .asset-row:last-child { border-bottom: none; }
+  .plan-item { display: flex; gap: 12px; margin-bottom: 14px; }
+  .plan-num { width: 24px; height: 24px; border-radius: 50%; background: var(--color-background-secondary); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); flex-shrink: 0; margin-top: 2px; }
+  .twin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .twin-item { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+  .company-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .company-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); min-width: 90px; }
+  .company-bar-track { flex: 1; height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
+  .company-bar-fill { height: 100%; border-radius: 3px; }
+  .sim-toggle { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .sim-btn { font-size: 12px; padding: 6px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; color: var(--color-text-secondary); transition: background 0.15s; }
+  .sim-btn:hover { background: var(--color-background-secondary); }
+  .sim-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+  .verdict-box { border-left: 3px solid #E24B4A; padding-left: 14px; }
+  .radar-container { position: relative; width: 100%; max-width: 280px; margin: 0 auto; }
+  .wow-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start; }
+  .wow-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .sep { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.5rem 0; }
+</style>
+
+<h2 class="sr-only">Digital footprint and privacy analysis dashboard based on 15 reported apps and services.</h2>
+<div class="dash">
+
+  <!-- Header -->
+  <div class="sec">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+      <div>
+        <p style="font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;">Digital Footprint Report</p>
+        <p style="font-size:13px;color:var(--color-text-secondary);">Based on 15 self-reported services &nbsp;·&nbsp; Analysis date: June 2026</p>
+      </div>
+      <span class="badge badge-red"><i class="ti ti-shield-x" aria-hidden="true"></i> High Exposure</span>
+    </div>
+    <p style="font-size:11px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.6;">All findings are based on publicly known data practices of listed services. Behavioural inferences are <strong style="font-weight:500;">Estimates</strong> only. No private databases were accessed.</p>
+  </div>
+
+  <!-- Top Scores -->
+  <div class="sec">
+    <div class="grid2" style="gap:14px;">
+      <div class="card">
+        <p class="section-label">Digital Footprint Score</p>
+        <div style="display:flex;align-items:flex-end;gap:10px;margin-top:6px;">
+          <p style="font-size:42px;font-weight:500;color:#E24B4A;line-height:1;">76</p>
+          <div style="padding-bottom:6px;">
+            <span class="badge badge-red">Significant</span>
+            <div class="progress-bar" style="width:140px;margin-top:8px;"><div class="progress-fill" style="width:76%;background:#E24B4A;"></div></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;">You leave a large, trackable presence across platforms owned by a concentrated set of corporations.</p>
+      </div>
+      <div class="card">
+        <p class="section-label">Privacy Score</p>
+        <div style="display:flex;align-items:flex-end;gap:10px;margin-top:6px;">
+          <p style="font-size:42px;font-weight:500;color:#EF9F27;line-height:1;">31</p>
+          <div style="padding-bottom:6px;">
+            <span class="badge badge-amber">Fair</span>
+            <div class="progress-bar" style="width:140px;margin-top:8px;"><div class="progress-fill" style="width:31%;background:#EF9F27;"></div></div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--color-text-secondary);margin-top:8px;">Multiple high-risk data brokers among your services. Significant room to improve default settings.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="sec">
+    <p class="section-label">Overview</p>
+    <div class="grid4">
+      <div class="metric-card">
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Total services</p>
+        <p style="font-size:24px;font-weight:500;color:var(--color-text-primary);">15</p>
+      </div>
+      <div class="metric-card">
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Parent companies</p>
+        <p style="font-size:24px;font-weight:500;color:var(--color-text-primary);">9</p>
+      </div>
+      <div class="metric-card">
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Ecosystem concentration</p>
+        <p style="font-size:24px;font-weight:500;color:#E24B4A;">High</p>
+      </div>
+      <div class="metric-card">
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Tracking surface</p>
+        <p style="font-size:24px;font-weight:500;color:#E24B4A;">Wide</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Exposure Heatmap -->
+  <div class="sec">
+    <p class="section-label">Exposure Heatmap</p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;">Estimated exposure level per service — based on publicly documented data collection practices.</p>
+    <div class="heatmap-grid">
+      <div class="heat-5">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-brand-google" aria-hidden="true"></i></div>
+        <div>Google Search</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Critical</div>
+      </div>
+      <div class="heat-5">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-brand-tiktok" aria-hidden="true"></i></div>
+        <div>TikTok</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Critical</div>
+      </div>
+      <div class="heat-4">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-brand-instagram" aria-hidden="true"></i></div>
+        <div>Instagram</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">High</div>
+      </div>
+      <div class="heat-4">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-brand-youtube" aria-hidden="true"></i></div>
+        <div>YouTube</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">High</div>
+      </div>
+      <div class="heat-4">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-brand-amazon" aria-hidden="true"></i></div>
+        <div>Amazon</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">High</div>
+      </div>
+      <div class="heat-3">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-camera" aria-hidden="true"></i></div>
+        <div>Snapchat</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Moderate</div>
+      </div>
+      <div class="heat-3">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-photo" aria-hidden="true"></i></div>
+        <div>G. Photos</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Moderate</div>
+      </div>
+      <div class="heat-3">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-credit-card" aria-hidden="true"></i></div>
+        <div>Google Pay</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Moderate</div>
+      </div>
+      <div class="heat-3">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-device-gamepad-2" aria-hidden="true"></i></div>
+        <div>PUBG Mobile</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Moderate</div>
+      </div>
+      <div class="heat-2">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-brand-spotify" aria-hidden="true"></i></div>
+        <div>Spotify</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Low-Mod</div>
+      </div>
+      <div class="heat-2">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-device-gamepad" aria-hidden="true"></i></div>
+        <div>Roblox</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Low-Mod</div>
+      </div>
+      <div class="heat-2">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-shopping-bag" aria-hidden="true"></i></div>
+        <div>Meesho</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Low-Mod</div>
+      </div>
+      <div class="heat-2">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-headset" aria-hidden="true"></i></div>
+        <div>Discord</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Low-Mod</div>
+      </div>
+      <div class="heat-1">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i></div>
+        <div>WhatsApp</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Lower</div>
+      </div>
+      <div class="heat-1">
+        <div style="font-size:16px;margin-bottom:3px;"><i class="ti ti-message" aria-hidden="true"></i></div>
+        <div>iMessage</div>
+        <div style="font-size:10px;margin-top:2px;opacity:0.8;">Lower</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
+      <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#E24B4A;border-radius:2px;"></span>Critical</span>
+      <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#F09595;border-radius:2px;"></span>High</span>
+      <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#FAC775;border-radius:2px;"></span>Moderate</span>
+      <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#FAEEDA;border-radius:2px;"></span>Low-Mod</span>
+      <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;background:#EAF3DE;border-radius:2px;"></span>Lower</span>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Company Exposure Ranking -->
+  <div class="sec">
+    <p class="section-label">Company Exposure Ranking</p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px;">Ranked by combined data reach — number of services, data types, and collection depth. <em>Estimate.</em></p>
+    <div>
+      <div class="company-bar">
+        <div class="company-name">Alphabet (Google)</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:95%;background:#E24B4A;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#E24B4A;">95</span>
+        <span class="badge badge-red" style="font-size:10px;">4 services</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">Meta</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:82%;background:#F09595;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#A32D2D;">82</span>
+        <span class="badge badge-red" style="font-size:10px;">2 services</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">ByteDance</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:78%;background:#EF9F27;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#854F0B;">78</span>
+        <span class="badge badge-amber" style="font-size:10px;">1 service</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">Amazon</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:65%;background:#EF9F27;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#854F0B;">65</span>
+        <span class="badge badge-amber" style="font-size:10px;">1 service</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">Snap Inc.</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:52%;background:#EF9F27;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#854F0B;">52</span>
+        <span class="badge badge-amber" style="font-size:10px;">1 service</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">Spotify</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:38%;background:#639922;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#3B6D11;">38</span>
+        <span class="badge badge-green" style="font-size:10px;">1 service</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">Apple</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:30%;background:#639922;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#3B6D11;">30</span>
+        <span class="badge badge-green" style="font-size:10px;">1 service</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">Krafton / PUBG</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:28%;background:#639922;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#3B6D11;">28</span>
+        <span class="badge badge-green" style="font-size:10px;">1 service</span>
+      </div>
+      <div class="company-bar">
+        <div class="company-name">Roblox Corp.</div>
+        <div class="company-bar-track"><div class="company-bar-fill" style="width:22%;background:#639922;"></div></div>
+        <span style="font-size:12px;font-weight:500;min-width:28px;color:#3B6D11;">22</span>
+        <span class="badge badge-green" style="font-size:10px;">1 service</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Data Collection Matrix -->
+  <div class="sec">
+    <p class="section-label">Data Collection Matrix</p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;">Categories of data likely collected across your services — based on public privacy policies. <em>Estimates only.</em></p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Data Category</th>
+            <th>Primary Collectors</th>
+            <th>Risk</th>
+            <th>Scale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="font-weight:500;">Search & intent</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">Google, TikTok</td>
+            <td><span class="dot dot-red"></span></td>
+            <td>
+              <div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:98%;background:#E24B4A;"></div></div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Behavioural / engagement</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">TikTok, Instagram, YouTube</td>
+            <td><span class="dot dot-red"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:93%;background:#E24B4A;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Purchase & financial</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">Amazon, Google Pay, Meesho</td>
+            <td><span class="dot dot-red"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:88%;background:#E24B4A;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Social graph</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">Meta, Discord, Snapchat</td>
+            <td><span class="dot dot-red"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:85%;background:#E24B4A;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Media & content taste</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">Spotify, YouTube, TikTok</td>
+            <td><span class="dot dot-amber"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:80%;background:#EF9F27;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Photos & biometrics</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">Google Photos, Snapchat, Meta</td>
+            <td><span class="dot dot-red"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:76%;background:#E24B4A;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Device & location</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">Google, Meta, PUBG Mobile</td>
+            <td><span class="dot dot-amber"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:70%;background:#EF9F27;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Gaming behaviour</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">PUBG Mobile, Roblox</td>
+            <td><span class="dot dot-amber"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:50%;background:#EF9F27;"></div></div></td>
+          </tr>
+          <tr>
+            <td><strong style="font-weight:500;">Messages / comms</strong></td>
+            <td style="color:var(--color-text-secondary);font-size:11px;">WhatsApp (metadata), Discord</td>
+            <td><span class="dot dot-green"></span></td>
+            <td><div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:35%;background:#639922;"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:8px;">
+      <span style="font-size:11px;color:var(--color-text-secondary);display:flex;align-items:center;gap:5px;"><span class="dot dot-red"></span> High risk</span>
+      <span style="font-size:11px;color:var(--color-text-secondary);display:flex;align-items:center;gap:5px;"><span class="dot dot-amber"></span> Moderate</span>
+      <span style="font-size:11px;color:var(--color-text-secondary);display:flex;align-items:center;gap:5px;"><span class="dot dot-green"></span> Lower</span>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Risk Radar -->
+  <div class="sec">
+    <p class="section-label">Risk Radar</p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px;">Risk assessment across six threat dimensions. Scores are estimates based on service profiles.</p>
+    <div style="position:relative;width:100%;max-width:300px;margin:0 auto 14px;">
+      <canvas id="radarChart" role="img" aria-label="Radar chart of risk across 6 categories: targeted advertising 92, data brokerage 75, identity exposure 68, account hijacking 60, profiling 88, cross-platform tracking 90. All scores estimated.">Estimated risks: targeted advertising 92/100, data brokerage 75, identity exposure 68, account hijacking 60, profiling 88, cross-platform tracking 90.</canvas>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+      <span class="badge badge-red">Targeted advertising 92</span>
+      <span class="badge badge-red">Cross-platform tracking 90</span>
+      <span class="badge badge-red">Profiling 88</span>
+      <span class="badge badge-amber">Data brokerage 75</span>
+      <span class="badge badge-amber">Identity exposure 68</span>
+      <span class="badge badge-amber">Account hijacking 60</span>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Digital Twin Profile -->
+  <div class="sec">
+    <p class="section-label">Digital Twin Profile <span class="badge badge-purple" style="margin-left:6px;">Estimates only</span></p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;">What corporations can likely infer about you from your service set. None of this is verified — these are probabilistic estimates derived from app usage patterns.</p>
+    <div class="twin-grid">
+      <div class="twin-item">
+        <p style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;"><i class="ti ti-user" aria-hidden="true" style="font-size:12px;"></i> Demographic estimate</p>
+        <p style="font-size:13px;color:var(--color-text-primary);">Likely 16–28 yrs · Gen Z / young millennial · Urban or semi-urban India</p>
+      </div>
+      <div class="twin-item">
+        <p style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;"><i class="ti ti-device-mobile" aria-hidden="true" style="font-size:12px;"></i> Device footprint estimate</p>
+        <p style="font-size:13px;color:var(--color-text-primary);">Android or iOS smartphone · Mid-range device probable · Data plan active</p>
+      </div>
+      <div class="twin-item">
+        <p style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;"><i class="ti ti-heart" aria-hidden="true" style="font-size:12px;"></i> Lifestyle estimate</p>
+        <p style="font-size:13px;color:var(--color-text-primary);">Entertainment-heavy · Social-media active · Gaming interest · Online shopper</p>
+      </div>
+      <div class="twin-item">
+        <p style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;"><i class="ti ti-currency-rupee" aria-hidden="true" style="font-size:12px;"></i> Spending estimate</p>
+        <p style="font-size:13px;color:var(--color-text-primary);">Digital payments active · E-commerce buyer · Budget to mid-range shopper</p>
+      </div>
+      <div class="twin-item">
+        <p style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;"><i class="ti ti-music" aria-hidden="true" style="font-size:12px;"></i> Content taste estimate</p>
+        <p style="font-size:13px;color:var(--color-text-primary);">Short-form video · Music streaming · Long-form video · Gaming content</p>
+      </div>
+      <div class="twin-item">
+        <p style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;"><i class="ti ti-friends" aria-hidden="true" style="font-size:12px;"></i> Social network estimate</p>
+        <p style="font-size:13px;color:var(--color-text-primary);">Active communicator · Multi-platform social presence · Community/gaming groups</p>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--color-text-tertiary);margin-top:10px;">These estimates are for educational awareness only. Actual corporate inferences may differ significantly.</p>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Most Valuable Data Assets -->
+  <div class="sec">
+    <p class="section-label">Most Valuable Data Assets</p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;">Data categories considered most commercially valuable to data brokers and advertisers. <em>Estimates.</em></p>
+    <div class="card" style="padding:0.75rem 1.25rem;">
+      <div class="asset-row">
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Purchase intent & shopping behaviour</p>
+          <p style="font-size:11px;color:var(--color-text-secondary);">Amazon, Meesho, Google Pay signals</p>
+        </div>
+        <span class="badge badge-red">Very High Value</span>
+      </div>
+      <div class="asset-row">
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Search & real-time intent</p>
+          <p style="font-size:11px;color:var(--color-text-secondary);">Google Search history</p>
+        </div>
+        <span class="badge badge-red">Very High Value</span>
+      </div>
+      <div class="asset-row">
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Attention & scroll behaviour</p>
+          <p style="font-size:11px;color:var(--color-text-secondary);">TikTok, Instagram, YouTube watch time</p>
+        </div>
+        <span class="badge badge-red">Very High Value</span>
+      </div>
+      <div class="asset-row">
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Social graph & relationships</p>
+          <p style="font-size:11px;color:var(--color-text-secondary);">WhatsApp contacts, Instagram follows, Discord servers</p>
+        </div>
+        <span class="badge badge-amber">High Value</span>
+      </div>
+      <div class="asset-row">
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Facial & photo data</p>
+          <p style="font-size:11px;color:var(--color-text-secondary);">Google Photos, Snapchat, Instagram</p>
+        </div>
+        <span class="badge badge-amber">High Value</span>
+      </div>
+      <div class="asset-row">
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Music & mood signals</p>
+          <p style="font-size:11px;color:var(--color-text-secondary);">Spotify listening history, playlists, skips</p>
+        </div>
+        <span class="badge badge-blue">Moderate Value</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- WOW Insights -->
+  <div class="sec">
+    <p class="section-label">WOW Insights</p>
+    <div class="wow-card">
+      <i class="ti ti-zoom-money wow-icon" aria-hidden="true" style="color:#E24B4A;"></i>
+      <div>
+        <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;">You are potentially in 4 separate ad ecosystems simultaneously</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);">Google, Meta, TikTok, and Amazon each run independent ad networks — and likely share signals about you through third-party trackers even across those walls. <em>Estimate.</em></p>
+      </div>
+    </div>
+    <div class="wow-card">
+      <i class="ti ti-robot wow-icon" aria-hidden="true" style="color:#854F0B;"></i>
+      <div>
+        <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;">Your scroll behaviour may be more revealing than your search history</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);">TikTok and Instagram track how long you pause on each piece of content — a signal often considered more accurate than explicit clicks. <em>Estimate based on public documentation.</em></p>
+      </div>
+    </div>
+    <div class="wow-card">
+      <i class="ti ti-camera wow-icon" aria-hidden="true" style="color:#534AB7;"></i>
+      <div>
+        <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;">Google Photos likely has a face model of you</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);">Google Photos uses facial recognition to group people in photos. If you have uploaded personal photos, a biometric model may exist in their system. <em>Estimate — actual storage practices vary by region.</em></p>
+      </div>
+    </div>
+    <div class="wow-card">
+      <i class="ti ti-refresh wow-icon" aria-hidden="true" style="color:#185FA5;"></i>
+      <div>
+        <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;">Alphabet sees you across search, video, photos, and payments</p>
+        <p style="font-size:12px;color:var(--color-text-secondary);">With Google Search, YouTube, Google Photos, and Google Pay under one parent, Alphabet likely holds the richest combined profile across your services. <em>Fact: 4 services share one parent company.</em></p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Privacy Improvement Simulator -->
+  <div class="sec">
+    <p class="section-label">Privacy Improvement Plan</p>
+    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:14px;">Practical steps to meaningfully reduce your exposure. Select actions to see their estimated impact.</p>
+    <div id="simResult" class="metric-card" style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <p style="font-size:11px;color:var(--color-text-secondary);">Estimated privacy score improvement</p>
+        <p style="font-size:22px;font-weight:500;color:var(--color-text-primary);" id="simScore">+0 pts</p>
+      </div>
+      <span class="badge badge-gray" id="simLabel">No actions selected</span>
+    </div>
+    <div class="sim-toggle" id="simToggles">
+      <button class="sim-btn" data-val="8" onclick="toggleSim(this)"><i class="ti ti-ad-off" aria-hidden="true"></i> Turn off personalised ads</button>
+      <button class="sim-btn" data-val="10" onclick="toggleSim(this)"><i class="ti ti-brand-tiktok" aria-hidden="true"></i> Delete TikTok</button>
+      <button class="sim-btn" data-val="7" onclick="toggleSim(this)"><i class="ti ti-search-off" aria-hidden="true"></i> Switch to DuckDuckGo</button>
+      <button class="sim-btn" data-val="6" onclick="toggleSim(this)"><i class="ti ti-photo-off" aria-hidden="true"></i> Disable Google Photos face grouping</button>
+      <button class="sim-btn" data-val="5" onclick="toggleSim(this)"><i class="ti ti-lock" aria-hidden="true"></i> Enable 2FA everywhere</button>
+      <button class="sim-btn" data-val="9" onclick="toggleSim(this)"><i class="ti ti-map-pin-off" aria-hidden="true"></i> Revoke location permissions</button>
+      <button class="sim-btn" data-val="4" onclick="toggleSim(this)"><i class="ti ti-eye-off" aria-hidden="true"></i> Set Instagram to private</button>
+      <button class="sim-btn" data-val="6" onclick="toggleSim(this)"><i class="ti ti-credit-card-off" aria-hidden="true"></i> Stop saving cards on apps</button>
+    </div>
+    <div style="margin-top:20px;">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;">Full action plan:</p>
+      <div class="plan-item">
+        <div class="plan-num">1</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Audit app permissions immediately</p>
+          <p style="font-size:12px;color:var(--color-text-secondary);">Go to phone settings and revoke camera, microphone, location, and contacts from any app that doesn't strictly need them — especially TikTok, Snapchat, and PUBG Mobile.</p>
+        </div>
+      </div>
+      <div class="plan-item">
+        <div class="plan-num">2</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Turn off ad personalisation on Google</p>
+          <p style="font-size:12px;color:var(--color-text-secondary);">Visit myaccount.google.com &gt; Data &amp; Privacy &gt; Ad Settings. This limits cross-service profiling across your 4 Google-owned services.</p>
+        </div>
+      </div>
+      <div class="plan-item">
+        <div class="plan-num">3</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Review Meta's off-Facebook activity</p>
+          <p style="font-size:12px;color:var(--color-text-secondary);">Meta tracks you across third-party websites. Go to Instagram Settings &gt; Security &gt; Off-Facebook Activity to clear and limit this.</p>
+        </div>
+      </div>
+      <div class="plan-item">
+        <div class="plan-num">4</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Enable TikTok's privacy controls (or consider deleting)</p>
+          <p style="font-size:12px;color:var(--color-text-secondary);">TikTok collects significant behavioural data. If you keep it, limit personalisation in Settings &gt; Privacy. Consider its high data exposure risk.</p>
+        </div>
+      </div>
+      <div class="plan-item">
+        <div class="plan-num">5</div>
+        <div>
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Use strong unique passwords and 2FA</p>
+          <p style="font-size:12px;color:var(--color-text-secondary);">With 15 services, a single breached credential is dangerous. Use a password manager and enable 2FA on every account, especially Google, WhatsApp, and Amazon.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <!-- Final Verdict -->
+  <div class="sec">
+    <p class="section-label">Final Verdict</p>
+    <div class="card">
+      <div class="verdict-box" style="margin-bottom:14px;">
+        <p style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;">You have a wide, concentrated digital footprint</p>
+        <p style="font-size:13px;color:var(--color-text-secondary);line-height:1.7;">Your 15 services map to just 9 parent companies, with Alphabet alone touching 4 of them. Combined with TikTok, Meta, and Amazon, an estimated 80%+ of your daily digital activity may flow through 4 corporate data silos. Your privacy score of 31/100 suggests significant default risk — but most of it is addressable through settings changes and permission audits alone, without deleting any apps.</p>
+      </div>
+      <div class="grid3" style="gap:10px;">
+        <div class="metric-card" style="text-align:center;">
+          <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Footprint</p>
+          <p style="font-size:20px;font-weight:500;color:#E24B4A;">76 / 100</p>
+          <span class="badge badge-red" style="font-size:10px;margin-top:4px;">Significant</span>
+        </div>
+        <div class="metric-card" style="text-align:center;">
+          <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Privacy</p>
+          <p style="font-size:20px;font-weight:500;color:#EF9F27;">31 / 100</p>
+          <span class="badge badge-amber" style="font-size:10px;margin-top:4px;">Fair</span>
+        </div>
+        <div class="metric-card" style="text-align:center;">
+          <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Potential gain</p>
+          <p style="font-size:20px;font-weight:500;color:#639922;">+35 pts</p>
+          <span class="badge badge-green" style="font-size:10px;margin-top:4px;">If steps taken</span>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--color-text-tertiary);margin-top:12px;">All scores and estimates are educational. No private data was accessed. Inferred traits are probabilistic, not confirmed.</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const tickColor = isDark ? '#888780' : '#888780';
+new Chart(document.getElementById('radarChart'), {
+  type: 'radar',
+  data: {
+    labels: ['Targeted ads', 'Cross-platform tracking', 'Profiling', 'Data brokerage', 'Identity exposure', 'Account hijacking'],
+    datasets: [{
+      label: 'Risk score (estimate)',
+      data: [92, 90, 88, 75, 68, 60],
+      borderColor: '#E24B4A',
+      backgroundColor: 'rgba(226,75,74,0.12)',
+      borderWidth: 1.5,
+      pointBackgroundColor: '#E24B4A',
+      pointRadius: 3
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      r: {
+        min: 0, max: 100,
+        ticks: { display: false, stepSize: 25 },
+        grid: { color: gridColor },
+        angleLines: { color: gridColor },
+        pointLabels: { font: { size: 11 }, color: tickColor }
+      }
+    }
+  }
+});
+
+function toggleSim(btn) {
+  btn.classList.toggle('active');
+  let total = 0;
+  document.querySelectorAll('.sim-btn.active').forEach(b => { total += parseInt(b.dataset.val); });
+  total = Math.min(total, 45);
+  document.getElementById('simScore').textContent = '+' + total + ' pts';
+  const count = document.querySelectorAll('.sim-btn.active').length;
+  const label = document.getElementById('simLabel');
+  if (count === 0) { label.textContent = 'No actions selected'; label.className = 'badge badge-gray'; }
+  else if (total < 15) { label.textContent = count + ' action' + (count>1?'s':'') + ' selected'; label.className = 'badge badge-amber'; }
+  else { label.textContent = count + ' actions · Good progress'; label.className = 'badge badge-green'; }
+}
+</script>
