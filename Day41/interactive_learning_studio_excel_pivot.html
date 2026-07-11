@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Learning Studio — PivotTables &amp; PivotCharts</title>
+<style>
+:root{
+  --bg:#12140f;
+  --bg-elev:#181b14;
+  --bg-elev-2:#1f231a;
+  --grid-line: rgba(233,238,224,0.07);
+  --ink:#e9eee0;
+  --ink-dim:#a9b09b;
+  --ink-faint:#767d6a;
+  --green:#3f9d6b;
+  --green-deep:#2c7350;
+  --amber:#e8a33d;
+  --amber-deep:#c17e1f;
+  --danger:#d9695a;
+  --radius:10px;
+  --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  --mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  --sys: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f3f1e8;
+  --bg-elev:#ffffff;
+  --bg-elev-2:#eae7da;
+  --grid-line: rgba(30,35,20,0.09);
+  --ink:#1c2016;
+  --ink-dim:#4c5340;
+  --ink-faint:#7a8069;
+  --green:#2c7350;
+  --green-deep:#1f5a3d;
+  --amber:#c17e1f;
+  --amber-deep:#9c630f;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/48px 48px,
+    var(--bg);
+  color:var(--ink);
+  font-family:var(--sys);
+  line-height:1.6;
+  transition:background-color .3s, color .3s;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:700; margin:0 0 .5em; letter-spacing:-.01em;}
+p{margin:0 0 1em; color:var(--ink-dim);}
+a{color:var(--amber);}
+.cellref{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--green);
+  text-transform:uppercase; display:inline-block; padding:2px 8px; border:1px solid var(--green-deep);
+  border-radius:4px; background:rgba(63,157,107,0.08);
+}
+.wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+/* ===== TOP BAR ===== */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  backdrop-filter: blur(10px);
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  border-bottom:1px solid var(--grid-line);
+}
+.topbar-inner{max-width:920px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; gap:16px; justify-content:space-between;}
+.brand{display:flex; align-items:center; gap:10px; font-family:var(--serif); font-weight:700; font-size:1.05rem;}
+.brand .fx{font-family:var(--mono); color:var(--green); font-size:.85rem; border:1px solid var(--green-deep); padding:1px 7px; border-radius:4px;}
+.topbar-controls{display:flex; align-items:center; gap:10px;}
+.progress-pill{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:.75rem; color:var(--ink-dim);}
+.progress-track{width:110px; height:6px; border-radius:4px; background:var(--bg-elev-2); overflow:hidden;}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--green),var(--amber)); width:0%; transition:width .5s ease;}
+.iconbtn{
+  width:34px; height:34px; border-radius:8px; border:1px solid var(--grid-line);
+  background:var(--bg-elev); color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:1rem; transition:.2s;
+}
+.iconbtn:hover{border-color:var(--green);}
+.score-pill{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:.78rem; color:var(--amber); border:1px solid var(--amber-deep); padding:4px 10px; border-radius:20px; background:rgba(232,163,61,.08);}
+
+/* ===== HERO ===== */
+.hero{padding:72px 0 40px; position:relative; overflow:hidden;}
+.hero .cellref{margin-bottom:18px;}
+.hero h1{font-size:clamp(2.1rem,5vw,3.2rem); line-height:1.05; max-width:760px;}
+.hero .tagline{font-size:1.15rem; max-width:600px; color:var(--ink-dim);}
+.hero-visual{margin-top:32px; border:1px solid var(--grid-line); border-radius:var(--radius); overflow:hidden; background:var(--bg-elev);}
+.mini-sheet{width:100%; border-collapse:collapse; font-family:var(--mono); font-size:.78rem;}
+.mini-sheet th,.mini-sheet td{border:1px solid var(--grid-line); padding:6px 10px; text-align:right;}
+.mini-sheet th{background:var(--bg-elev-2); color:var(--ink-dim); font-weight:600; text-align:center;}
+.mini-sheet td:first-child, .mini-sheet th:first-child{text-align:left;}
+.mini-sheet tr.total td{background:rgba(63,157,107,.1); font-weight:700; color:var(--green);}
+
+.meta-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:36px;}
+.meta-card{background:var(--bg-elev); border:1px solid var(--grid-line); border-radius:var(--radius); padding:16px 18px;}
+.meta-card .k{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:var(--green);}
+.meta-card .v{font-size:1.02rem; margin-top:6px; color:var(--ink);}
+.reward-box{margin-top:20px; border:1px dashed var(--amber-deep); border-radius:var(--radius); padding:16px 18px; background:rgba(232,163,61,.06); display:flex; gap:14px; align-items:flex-start;}
+.reward-box .trophy{font-size:1.6rem;}
+.badges{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+.badge{font-family:var(--mono); font-size:.68rem; padding:4px 9px; border-radius:20px; border:1px solid var(--grid-line); color:var(--ink-faint); background:var(--bg-elev-2);}
+.badge.earned{color:var(--bg); background:var(--amber); border-color:var(--amber);}
+
+.start-btn{
+  margin-top:28px; display:inline-flex; align-items:center; gap:10px; background:var(--green);
+  color:#0d130f; font-weight:700; border:none; padding:14px 26px; border-radius:8px; font-size:1rem; cursor:pointer;
+  transition:transform .15s, background .2s;
+}
+.start-btn:hover{background:var(--amber); transform:translateY(-2px);}
+
+/* ===== MODULES ===== */
+section.module{padding:64px 0; border-top:1px solid var(--grid-line); scroll-margin-top:80px;}
+.locked{opacity:.35; pointer-events:none; filter:blur(1.5px);}
+.mod-head{display:flex; align-items:baseline; gap:14px; margin-bottom:8px;}
+.mod-num{font-family:var(--mono); color:var(--green); font-size:1.4rem;}
+.mod-diff{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); border:1px solid var(--grid-line); padding:2px 8px; border-radius:12px;}
+.mod-sub{color:var(--ink-faint); margin-bottom:36px; font-size:.95rem;}
+
+.block{margin-bottom:38px;}
+.block h3{font-size:1.25rem; color:var(--ink);}
+.block h3 .cellref{margin-right:10px;}
+
+.card{background:var(--bg-elev); border:1px solid var(--grid-line); border-radius:var(--radius); padding:20px 22px; margin:14px 0;}
+.card.example{border-left:3px solid var(--green);}
+.card.analogy{border-left:3px solid var(--amber); font-style:italic; color:var(--ink-dim);}
+.card.misconception{border-left:3px solid var(--danger);}
+.card.misconception .x{color:var(--danger); font-family:var(--mono); font-weight:700;}
+.card.misconception .ok{color:var(--green); font-family:var(--mono); font-weight:700;}
+
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+@media (max-width:680px){.two-col{grid-template-columns:1fr;}}
+
+.compare-table{width:100%; border-collapse:collapse; font-size:.88rem; margin:14px 0;}
+.compare-table th,.compare-table td{border:1px solid var(--grid-line); padding:9px 12px; text-align:left;}
+.compare-table th{background:var(--bg-elev-2); font-family:var(--mono); font-size:.72rem; text-transform:uppercase; color:var(--green);}
+
+.takeaways{list-style:none; padding:0; margin:14px 0;}
+.takeaways li{padding:8px 0 8px 28px; position:relative; color:var(--ink-dim); border-bottom:1px dashed var(--grid-line);}
+.takeaways li:before{content:"✓"; position:absolute; left:0; color:var(--green); font-weight:700;}
+
+/* Field well diagram */
+.fieldwell{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0;}
+.well{border:1px solid var(--grid-line); border-radius:8px; padding:12px; background:var(--bg-elev-2); min-height:76px;}
+.well .label{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; letter-spacing:.08em;}
+.chip{display:inline-block; background:var(--green-deep); color:#eafff2; font-family:var(--mono); font-size:.72rem; padding:4px 9px; border-radius:6px; margin:3px 4px 0 0;}
+.chip.amber{background:var(--amber-deep); color:#2a1c02;}
+
+/* Interactive pivot demo */
+.pivot-demo{border:1px solid var(--grid-line); border-radius:var(--radius); overflow:hidden; margin:20px 0; background:var(--bg-elev);}
+.pivot-demo-controls{display:flex; gap:18px; flex-wrap:wrap; padding:16px 18px; border-bottom:1px solid var(--grid-line); background:var(--bg-elev-2);}
+.pivot-demo-controls .grp{display:flex; flex-direction:column; gap:6px;}
+.pivot-demo-controls label{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; color:var(--ink-faint);}
+.pivot-demo-controls select{background:var(--bg); color:var(--ink); border:1px solid var(--grid-line); border-radius:6px; padding:6px 8px; font-family:var(--sys); font-size:.85rem;}
+.pivot-out{padding:0;}
+table.pivot-table{width:100%; border-collapse:collapse; font-family:var(--mono); font-size:.82rem;}
+table.pivot-table th, table.pivot-table td{border:1px solid var(--grid-line); padding:8px 12px; text-align:right;}
+table.pivot-table th{background:var(--bg-elev-2); text-align:left; color:var(--ink-dim);}
+table.pivot-table td:first-child{text-align:left; color:var(--ink);}
+table.pivot-table tr.grand td{font-weight:700; color:var(--green); background:rgba(63,157,107,.08);}
+
+/* mini bar chart */
+.chartbox{padding:18px; display:flex; align-items:flex-end; gap:10px; height:160px; border-top:1px solid var(--grid-line);}
+.bar{flex:1; background:linear-gradient(180deg,var(--green),var(--green-deep)); border-radius:4px 4px 0 0; position:relative; min-width:20px; transition:height .4s ease;}
+.bar .val{position:absolute; top:-20px; left:0; right:0; text-align:center; font-family:var(--mono); font-size:.68rem; color:var(--ink-dim);}
+.bar .lbl{position:absolute; bottom:-22px; left:0; right:0; text-align:center; font-family:var(--mono); font-size:.65rem; color:var(--ink-faint);}
+
+/* exercise */
+.exercise{border:1px solid var(--green-deep); border-radius:var(--radius); padding:20px 22px; background:rgba(63,157,107,.05); margin:18px 0;}
+.exercise .tag{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--green); margin-bottom:8px; display:block;}
+.exercise textarea{width:100%; min-height:70px; background:var(--bg); color:var(--ink); border:1px solid var(--grid-line); border-radius:8px; padding:10px; font-family:var(--mono); font-size:.85rem; resize:vertical;}
+.reveal-btn{margin-top:10px; background:transparent; border:1px solid var(--amber-deep); color:var(--amber); padding:8px 16px; border-radius:6px; cursor:pointer; font-family:var(--sys); font-size:.85rem;}
+.reveal-btn:hover{background:rgba(232,163,61,.1);}
+.reveal-content{display:none; margin-top:12px; padding-top:12px; border-top:1px dashed var(--grid-line); color:var(--ink-dim); font-size:.9rem;}
+.reveal-content.show{display:block;}
+
+/* drag drop exercise */
+.dragzone{display:flex; gap:14px; flex-wrap:wrap; margin:14px 0;}
+.draggable{cursor:grab; user-select:none;}
+.dropzone{flex:1; min-width:140px; min-height:60px; border:2px dashed var(--grid-line); border-radius:8px; padding:8px; background:var(--bg-elev-2);}
+.dropzone.over{border-color:var(--green);}
+.dropzone .dz-label{font-family:var(--mono); font-size:.65rem; text-transform:uppercase; color:var(--ink-faint); display:block; margin-bottom:6px;}
+
+/* quiz */
+.quiz{margin-top:44px; border:1px solid var(--grid-line); border-radius:var(--radius); overflow:hidden;}
+.quiz-head{padding:18px 22px; background:var(--bg-elev-2); display:flex; justify-content:space-between; align-items:center;}
+.quiz-head h3{margin:0; font-size:1.1rem;}
+.quiz-body{padding:22px; background:var(--bg-elev);}
+.q-item{margin-bottom:26px;}
+.q-item .q-text{font-weight:600; margin-bottom:12px; color:var(--ink);}
+.q-opts{display:flex; flex-direction:column; gap:8px;}
+.q-opt{
+  display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid var(--grid-line);
+  border-radius:8px; cursor:pointer; transition:.15s; background:var(--bg-elev-2);
+}
+.q-opt:hover{border-color:var(--green);}
+.q-opt.selected{border-color:var(--amber); background:rgba(232,163,61,.08);}
+.q-opt.correct{border-color:var(--green); background:rgba(63,157,107,.15); color:var(--green);}
+.q-opt.incorrect{border-color:var(--danger); background:rgba(217,105,90,.12); color:var(--danger);}
+.q-explain{display:none; font-size:.85rem; margin-top:8px; padding:10px 12px; border-radius:6px; background:var(--bg-elev-2); color:var(--ink-dim); border-left:3px solid var(--green);}
+.q-explain.show{display:block;}
+.quiz-submit{background:var(--green); border:none; color:#0d130f; font-weight:700; padding:11px 22px; border-radius:8px; cursor:pointer; font-size:.9rem;}
+.quiz-submit:disabled{opacity:.4; cursor:not-allowed;}
+.quiz-result{display:none; padding:18px 22px; border-top:1px solid var(--grid-line); background:var(--bg-elev-2);}
+.quiz-result.show{display:block;}
+.quiz-result .score-big{font-family:var(--serif); font-size:2rem; color:var(--amber);}
+.unlock-btn{margin-top:14px; background:var(--amber); border:none; color:#241804; font-weight:700; padding:11px 22px; border-radius:8px; cursor:pointer;}
+
+/* final challenge */
+.challenge{background:var(--bg-elev); border:1px solid var(--amber-deep); border-radius:var(--radius); padding:26px; margin:20px 0;}
+.cheat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin:14px 0;}
+.cheat-card{background:var(--bg-elev-2); border:1px solid var(--grid-line); border-radius:8px; padding:14px 16px;}
+.cheat-card h4{font-size:.9rem; color:var(--green); margin-bottom:8px;}
+.cheat-card code{font-family:var(--mono); font-size:.78rem; color:var(--amber); display:block; margin-bottom:4px;}
+
+.resource-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:18px;}
+.res-card{background:var(--bg-elev); border:1px solid var(--grid-line); border-radius:var(--radius); padding:18px 20px;}
+.res-card h4{font-size:.95rem; margin-bottom:10px; color:var(--ink); display:flex; align-items:center; gap:8px;}
+.res-card ul{margin:0; padding-left:18px; color:var(--ink-dim); font-size:.87rem;}
+.res-card ul li{margin-bottom:6px;}
+.kw{display:inline-block; font-family:var(--mono); font-size:.72rem; background:var(--bg-elev-2); border:1px solid var(--grid-line); padding:4px 9px; border-radius:14px; margin:3px 4px 0 0; color:var(--ink-dim);}
+
+footer{padding:50px 0 80px; text-align:center; color:var(--ink-faint); font-size:.82rem;}
+.print-btn{background:transparent; border:1px solid var(--grid-line); color:var(--ink-dim); padding:9px 18px; border-radius:8px; cursor:pointer; font-size:.85rem; margin-top:16px;}
+
+@media print{
+  .topbar, .start-btn, .quiz-submit, .reveal-btn, .print-btn, .iconbtn{display:none !important;}
+  .locked{opacity:1; filter:none;}
+  body{background:#fff; color:#000;}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="fx">fx</span> Interactive Learning Studio</div>
+    <div class="topbar-controls">
+      <div class="score-pill">★ <span id="pointsDisplay">0</span> pts</div>
+      <div class="progress-pill">
+        <span id="progressLabel">0%</span>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <button class="iconbtn" id="themeToggle" title="Toggle light/dark mode">◐</button>
+      <button class="iconbtn" id="printBtn" title="Print / Save notes">⎙</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- HERO -->
+<section class="hero">
+  <span class="cellref">A1 · Introduction</span>
+  <h1>PivotTables &amp; PivotCharts in Excel</h1>
+  <p class="tagline">Turn thousands of raw rows into clear, decision-ready summaries — then bring them to life as charts. One focused tutorial, four modules, full mastery.</p>
+
+  <div class="hero-visual">
+    <table class="mini-sheet">
+      <tr><th>Region</th><th>Product</th><th>Rep</th><th>Units</th><th>Revenue</th></tr>
+      <tr><td>West</td><td>Desk</td><td>Nia</td><td>12</td><td>$3,600</td></tr>
+      <tr><td>East</td><td>Chair</td><td>Omar</td><td>30</td><td>$4,500</td></tr>
+      <tr><td>West</td><td>Chair</td><td>Nia</td><td>18</td><td>$2,700</td></tr>
+      <tr><td>East</td><td>Desk</td><td>Priya</td><td>9</td><td>$2,700</td></tr>
+      <tr><td colspan="3">2,847 more rows…</td><td>—</td><td>—</td></tr>
+      <tr class="total"><td colspan="3">→ Pivoted: Revenue by Region</td><td>West</td><td>$118,400</td></tr>
+    </table>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-card"><div class="k">Estimated time</div><div class="v">55–70 minutes</div></div>
+    <div class="meta-card"><div class="k">Prerequisites</div><div class="v">Basic Excel navigation, entering data in cells</div></div>
+    <div class="meta-card"><div class="k">Format</div><div class="v">4 modules · 4 quizzes each · 1 final challenge</div></div>
+    <div class="meta-card"><div class="k">Outcome</div><div class="v">Build, configure, and visualize PivotTables confidently</div></div>
+  </div>
+
+  <div class="block" style="margin-top:28px;">
+    <h3><span class="cellref">B1</span> Learning objectives</h3>
+    <ul class="takeaways">
+      <li>Explain what a PivotTable does and why it beats manual summarizing (SUMIF, COUNTIF chains)</li>
+      <li>Prepare a data range so Excel can pivot it correctly</li>
+      <li>Build a PivotTable by placing fields into Rows, Columns, Values, and Filters</li>
+      <li>Configure value summaries, grouping, sorting, filtering, and calculated fields</li>
+      <li>Create a PivotChart linked to a PivotTable and add slicers/timelines</li>
+      <li>Diagnose and fix the most common PivotTable errors</li>
+    </ul>
+  </div>
+
+  <div class="reward-box">
+    <div class="trophy">🏆</div>
+    <div>
+      <strong>Reward system</strong>
+      <p style="margin:6px 0 0;">Earn <strong style="color:var(--amber)">10 points per correct quiz answer</strong> and unlock a badge after each module. Score 100% on a module quiz for a bonus <strong style="color:var(--amber)">+20pt Bullseye bonus</strong>. Finish the final challenge to unlock the Pivot Master badge.</p>
+      <div class="badges" id="badgeRow">
+        <span class="badge" data-badge="b1">🌱 Foundations</span>
+        <span class="badge" data-badge="b2">🛠️ Builder</span>
+        <span class="badge" data-badge="b3">📊 Visualizer</span>
+        <span class="badge" data-badge="b4">🎓 Master</span>
+        <span class="badge" data-badge="b5">🏅 Pivot Master (Final)</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="start-btn" id="startBtn">Begin Module 1 ↓</button>
+</section>
+
+<!-- ================= MODULE 1 ================= -->
+<section class="module" id="module1">
+  <div class="mod-head"><span class="mod-num">01</span><h2>Foundations — What a PivotTable Actually Does</h2><span class="mod-diff">Beginner</span></div>
+  <p class="mod-sub">Understand the mental model before touching a single button.</p>
+
+  <div class="block">
+    <h3><span class="cellref">C4</span> The core idea</h3>
+    <p>A PivotTable does one job: it <strong>groups rows of raw data and summarizes them</strong>. Instead of scrolling through 3,000 order rows to answer "how much did the West region sell?", a PivotTable groups every row by Region and adds up Revenue automatically. Nothing in your source data changes — the PivotTable is a separate, live "view" sitting on top of it.</p>
+    <div class="card analogy">Think of raw data as a pile of receipts dumped on a desk. A PivotTable is a set of labeled trays: drop each receipt into the right tray (by region, by product, by month), and the tray's total is your answer. Rearranging the trays never changes what's written on the receipts.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">C5</span> The four field areas</h3>
+    <p>Every PivotTable is built by dragging column headers from your source data into four boxes. This is the single most important concept in this tutorial:</p>
+    <div class="fieldwell">
+      <div class="well"><div class="label">Rows</div><span class="chip">Region</span><span class="chip">Product</span><div style="margin-top:8px;color:var(--ink-faint);font-size:.78rem;">Creates one row per unique value — your groups going down the page.</div></div>
+      <div class="well"><div class="label">Columns</div><span class="chip">Quarter</span><div style="margin-top:8px;color:var(--ink-faint);font-size:.78rem;">Same idea, but spread across the top instead of down.</div></div>
+      <div class="well"><div class="label">Values</div><span class="chip amber">Sum of Revenue</span><span class="chip amber">Count of Orders</span><div style="margin-top:8px;color:var(--ink-faint);font-size:.78rem;">The numbers being aggregated — sum, count, average, etc.</div></div>
+      <div class="well"><div class="label">Filters</div><span class="chip">Year</span><div style="margin-top:8px;color:var(--ink-faint);font-size:.78rem;">Narrows the whole table without deleting data — a report-level filter.</div></div>
+    </div>
+    <div class="card example">
+      <strong>Worked example:</strong> a furniture retailer has a 3,000-row order log with columns Region, Product, Rep, Units, Revenue. Dragging <em>Region</em> into Rows and <em>Revenue</em> into Values instantly produces a 4-row summary: total revenue for North, South, East, West. Add <em>Product</em> into Columns and the same table now shows revenue for every Region × Product combination — no formulas typed anywhere.
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">C6</span> Preparing data Excel can pivot</h3>
+    <p>PivotTables are strict about input shape. Before building one, your range needs:</p>
+    <ul class="takeaways">
+      <li>One header row with unique, non-blank column names — no merged cells</li>
+      <li>No fully blank rows or columns inside the range</li>
+      <li>One value per cell — not "Nia / Omar" crammed into one Rep cell</li>
+      <li>Consistent types per column — dates as dates, numbers as numbers, not text</li>
+      <li>Ideally formatted as an Excel <em>Table</em> (Ctrl+T) so it auto-expands as rows are added</li>
+    </ul>
+    <div class="two-col">
+      <div class="card" style="border-left:3px solid var(--green);"><strong style="color:var(--green)">✓ Pivot-ready</strong><br><span style="color:var(--ink-dim);font-size:.85rem;">Flat table, one row per transaction, clean headers, consistent data types.</span></div>
+      <div class="card" style="border-left:3px solid var(--danger);"><strong style="color:var(--danger)">✗ Not pivot-ready</strong><br><span style="color:var(--ink-dim);font-size:.85rem;">Monthly totals already pre-summarized across merged header cells, or subtotal rows mixed into the data.</span></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">C7</span> Comparison: PivotTable vs. formulas vs. manual sorting</h3>
+    <table class="compare-table">
+      <tr><th>Approach</th><th>Speed to build</th><th>Flexibility to reshape</th><th>Risk of error</th></tr>
+      <tr><td>SUMIF/COUNTIF chains</td><td>Slow — one formula per category</td><td>Low — rewrite formulas to change grouping</td><td>Medium — easy to miscopy ranges</td></tr>
+      <tr><td>Manual sort + eyeballing totals</td><td>Very slow</td><td>None — redo by hand each time</td><td>High — human arithmetic</td></tr>
+      <tr><td>PivotTable</td><td>Seconds</td><td>High — drag fields to reshape instantly</td><td>Low — Excel aggregates for you</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">C8</span> Try it: sort fields into the right well</h3>
+    <div class="exercise">
+      <span class="tag">Interactive · drag the fields</span>
+      <p style="margin-bottom:10px;color:var(--ink-dim);">Goal: "Show total Revenue for each Rep, broken out by Product across the top." Drag each field chip into the well where it belongs.</p>
+      <div class="dragzone" id="dragSource">
+        <span class="chip draggable" draggable="true" data-field="Rep">Rep</span>
+        <span class="chip draggable" draggable="true" data-field="Product">Product</span>
+        <span class="chip draggable" draggable="true" data-field="Revenue">Revenue</span>
+      </div>
+      <div class="fieldwell">
+        <div class="dropzone" data-answer="Rep"><span class="dz-label">Rows</span></div>
+        <div class="dropzone" data-answer="Product"><span class="dz-label">Columns</span></div>
+        <div class="dropzone" data-answer="Revenue"><span class="dz-label">Values</span></div>
+        <div class="dropzone" data-answer=""><span class="dz-label">Filters</span></div>
+      </div>
+      <p id="dragFeedback" style="margin-top:10px;font-size:.85rem;color:var(--ink-faint);">Drop all three chips to check your layout.</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">C9</span> Common misconceptions</h3>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "A PivotTable changes my original data."<br><span class="ok">✓ Reality:</span> it only reads from the source range and builds a separate cache — your data stays untouched.</div>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "You need formulas to summarize data."<br><span class="ok">✓ Reality:</span> PivotTables replace most SUMIF/COUNTIF work with drag-and-drop, and update in seconds.</div>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "Rows and Columns must always both be used."<br><span class="ok">✓ Reality:</span> Columns is optional — many useful pivots only use Rows and Values.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">C10</span> Key takeaways</h3>
+    <ul class="takeaways">
+      <li>A PivotTable summarizes source data without altering it</li>
+      <li>Four wells — Rows, Columns, Values, Filters — control every layout</li>
+      <li>Clean, flat, table-formatted data is a prerequisite, not optional polish</li>
+      <li>PivotTables beat manual formulas on speed, flexibility, and accuracy</li>
+    </ul>
+  </div>
+
+  <!-- QUIZ 1 -->
+  <div class="quiz" id="quiz1" data-module="1">
+    <div class="quiz-head"><h3>Module 1 Quiz</h3><span class="cellref">4 questions</span></div>
+    <div class="quiz-body" id="quiz1Body"></div>
+  </div>
+</section>
+
+<!-- ================= MODULE 2 ================= -->
+<section class="module locked" id="module2">
+  <div class="mod-head"><span class="mod-num">02</span><h2>Building &amp; Configuring PivotTables</h2><span class="mod-diff">Intermediate</span></div>
+  <p class="mod-sub">From a blank field list to a fully configured, grouped, filtered report.</p>
+
+  <div class="block">
+    <h3><span class="cellref">D4</span> Step-by-step build</h3>
+    <ol style="color:var(--ink-dim); padding-left:20px;">
+      <li>Click any cell inside your data table.</li>
+      <li>Insert → PivotTable → choose "New Worksheet".</li>
+      <li>In the Field List, drag headers into Rows, Columns, Values, Filters.</li>
+      <li>Click a Values field → Value Field Settings to change Sum/Count/Average.</li>
+      <li>Right-click a row label → Group to bucket dates or numbers.</li>
+    </ol>
+    <div class="card example"><strong>Worked example:</strong> dragging <em>Order Date</em> into Rows initially lists every individual date. Right-click → Group → select "Months" and "Quarters" and Excel collapses 365 daily rows into 12 monthly rows automatically — no helper columns needed.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">D5</span> Value field summary types</h3>
+    <table class="compare-table">
+      <tr><th>Summary type</th><th>Best for</th><th>Example</th></tr>
+      <tr><td>Sum</td><td>Additive numeric totals</td><td>Total Revenue per Region</td></tr>
+      <tr><td>Count</td><td>Counting occurrences (even of text)</td><td>Number of Orders per Rep</td></tr>
+      <tr><td>Average</td><td>Typical value per group</td><td>Average Order Size per Product</td></tr>
+      <tr><td>Max / Min</td><td>Extremes</td><td>Largest single sale per Region</td></tr>
+      <tr><td>% of Column Total</td><td>Share/proportion analysis</td><td>Each Rep's share of total Revenue</td></tr>
+    </table>
+    <div class="card analogy">Choosing a summary type is like choosing what a librarian reports about a shelf: how many books total (Count), the combined page count (Sum), or the average book length (Average) — same shelf, different questions.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">D6</span> Sorting, filtering &amp; calculated fields</h3>
+    <p>Click the dropdown arrow on any Row/Column label to filter values in or out, or to sort largest-to-smallest. For custom math across existing fields (e.g., Profit = Revenue − Cost), use PivotTable Analyze → Fields, Items &amp; Sets → Calculated Field, and write a formula referencing the field names directly.</p>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "Calculated Fields work like normal cell formulas, row by row."<br><span class="ok">✓ Reality:</span> Excel calculates them on the <em>summarized totals</em>, not on each underlying row — this can produce misleading results for ratios like margin %.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">D7</span> Live demo: build your own layout</h3>
+    <div class="pivot-demo">
+      <div class="pivot-demo-controls">
+        <div class="grp"><label>Rows</label>
+          <select id="demoRows"><option value="Region">Region</option><option value="Product">Product</option><option value="Rep">Rep</option></select>
+        </div>
+        <div class="grp"><label>Values</label>
+          <select id="demoValues"><option value="sum">Sum of Revenue</option><option value="count">Count of Orders</option><option value="avg">Average Revenue</option></select>
+        </div>
+      </div>
+      <div class="pivot-out"><table class="pivot-table" id="demoOut"></table></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">D8</span> Exercise: predict the output</h3>
+    <div class="exercise">
+      <span class="tag">Think it through</span>
+      <p style="color:var(--ink-dim);">Given the order log above, if you set Rows = Product, Values = Average Revenue, what would you expect the "Chair" row to roughly equal, and why might it differ from Sum ÷ Count done by hand?</p>
+      <textarea placeholder="Type your reasoning here (not graded, just for practice)..."></textarea>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show')">Reveal answer</button>
+      <div class="reveal-content">Average Revenue for "Chair" is the sum of every Chair row's Revenue divided by the count of Chair rows — Excel computes this internally, so it will always match Sum÷Count exactly, as long as no rows are hidden by a filter. A common trap: an active filter silently excludes rows from both the sum and the count, so the visible average is correct for the filtered set but not for the whole dataset.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">D9</span> Key takeaways</h3>
+    <ul class="takeaways">
+      <li>Grouping turns granular dates/numbers into readable buckets</li>
+      <li>Different summary types answer different business questions</li>
+      <li>Filters affect every calculation downstream, including averages</li>
+      <li>Calculated Fields operate on totals, not row-by-row</li>
+    </ul>
+  </div>
+
+  <div class="quiz" id="quiz2" data-module="2">
+    <div class="quiz-head"><h3>Module 2 Quiz</h3><span class="cellref">4 questions</span></div>
+    <div class="quiz-body" id="quiz2Body"></div>
+  </div>
+</section>
+
+<!-- ================= MODULE 3 ================= -->
+<section class="module locked" id="module3">
+  <div class="mod-head"><span class="mod-num">03</span><h2>PivotCharts &amp; Interactive Dashboards</h2><span class="mod-diff">Advanced</span></div>
+  <p class="mod-sub">Turn a pivot table into a visual, filterable report.</p>
+
+  <div class="block">
+    <h3><span class="cellref">E4</span> From table to chart</h3>
+    <p>A PivotChart is a chart bound directly to a PivotTable's data cache. Select any cell in the PivotTable → Insert → PivotChart, choose a chart type, and the chart updates automatically whenever you reshape the underlying pivot.</p>
+    <div class="card example"><strong>Worked example:</strong> a Region × Quarter PivotTable becomes a clustered column chart showing four bars per region. Dragging <em>Product</em> in as an additional Row field instantly adds more categories to the chart — no manual re-selection of chart data ranges.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">E5</span> Choosing the right chart type</h3>
+    <table class="compare-table">
+      <tr><th>Chart type</th><th>Use when</th></tr>
+      <tr><td>Clustered column</td><td>Comparing totals across a few categories (Region, Product)</td></tr>
+      <tr><td>Line</td><td>Showing a trend over time (Month, Quarter)</td></tr>
+      <tr><td>Pie</td><td>Showing share of one whole — use sparingly, max ~5 slices</td></tr>
+      <tr><td>Stacked bar</td><td>Comparing totals while also showing composition</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">E6</span> Live demo: revenue by region</h3>
+    <div class="pivot-demo">
+      <div class="chartbox" id="chartDemo"></div>
+    </div>
+    <p style="font-size:.85rem;color:var(--ink-faint);">This bar chart is generated live from the same order log used throughout this tutorial — exactly how a PivotChart mirrors its PivotTable.</p>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">E7</span> Slicers &amp; timelines</h3>
+    <p>Slicers are clickable filter buttons (Insert → Slicer) that let anyone filter the PivotTable/Chart without opening dropdown menus — ideal for dashboards used by non-Excel-experts. Timelines are a date-specific slicer variant with a draggable range control, built for filtering by Day/Month/Quarter/Year.</p>
+    <div class="card analogy">A slicer is like a row of light switches on a wall panel — instead of digging through a menu, you flip the "West" switch and every connected chart and table updates in sync.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">E8</span> Common misconceptions</h3>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "One slicer only controls one PivotTable."<br><span class="ok">✓ Reality:</span> via Report Connections, a single slicer can drive multiple PivotTables/Charts sharing the same data source at once.</div>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "Pie charts work for any category count."<br><span class="ok">✓ Reality:</span> beyond ~5–6 slices, pies become unreadable; a bar chart communicates the same comparison far more clearly.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">E9</span> Exercise: pick the right chart</h3>
+    <div class="exercise">
+      <span class="tag">Quick check</span>
+      <p style="color:var(--ink-dim);">You need to show how monthly revenue trended across an entire year for one region. Which chart type fits best, and why?</p>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show')">Reveal answer</button>
+      <div class="reveal-content">A line chart — it's built for showing change over a continuous time axis, making the trend's direction and any seasonality immediately visible, unlike a column or pie chart.</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">E10</span> Key takeaways</h3>
+    <ul class="takeaways">
+      <li>PivotCharts stay synced to their source PivotTable automatically</li>
+      <li>Match chart type to the question: comparison, trend, or share</li>
+      <li>Slicers and timelines make dashboards usable by non-technical viewers</li>
+      <li>One slicer can control several linked PivotTables via Report Connections</li>
+    </ul>
+  </div>
+
+  <div class="quiz" id="quiz3" data-module="3">
+    <div class="quiz-head"><h3>Module 3 Quiz</h3><span class="cellref">4 questions</span></div>
+    <div class="quiz-body" id="quiz3Body"></div>
+  </div>
+</section>
+
+<!-- ================= MODULE 4 ================= -->
+<section class="module locked" id="module4">
+  <div class="mod-head"><span class="mod-num">04</span><h2>Mastery — Advanced Techniques &amp; Troubleshooting</h2><span class="mod-diff">Expert</span></div>
+  <p class="mod-sub">The tools and habits that separate a casual user from someone who reports with confidence.</p>
+
+  <div class="block">
+    <h3><span class="cellref">F4</span> GETPIVOTDATA</h3>
+    <p>When you reference a PivotTable cell from a formula elsewhere, Excel often auto-generates a <code style="color:var(--amber)">GETPIVOTDATA()</code> formula instead of a plain cell reference. It pulls a specific summarized value by field name and item — and keeps working even if you reorder rows, unlike a fragile cell reference.</p>
+    <div class="card example">Example: <code style="font-family:var(--mono);color:var(--amber);">=GETPIVOTDATA("Revenue",$A$3,"Region","West")</code> always returns West's total revenue, even if West moves from row 2 to row 4 after a sort.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">F5</span> Beyond a single PivotTable: the Data Model</h3>
+    <p>For datasets that don't fit in one flat table — e.g., Orders and Customers in separate tables — Excel's Data Model (Power Pivot) lets you build relationships between tables and pivot across both at once, without VLOOKUPs merging them first.</p>
+    <div class="two-col">
+      <div class="card"><strong style="color:var(--green)">Single-table pivot</strong><p style="margin:6px 0 0;font-size:.85rem;">Fast, simple, fine for one flat source.</p></div>
+      <div class="card"><strong style="color:var(--amber)">Data Model pivot</strong><p style="margin:6px 0 0;font-size:.85rem;">Handles multiple related tables, larger datasets, DAX measures.</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">F6</span> Performance &amp; refresh discipline</h3>
+    <ul class="takeaways">
+      <li>PivotTables don't auto-update when source data changes — click Refresh (or Refresh All)</li>
+      <li>Use Table-formatted sources (Ctrl+T) so new rows are picked up on refresh automatically</li>
+      <li>For very large sources, load into the Data Model rather than duplicating data per pivot</li>
+      <li>Turn off "Autofit column widths on update" if it's disrupting your layout each refresh</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">F7</span> Troubleshooting common errors</h3>
+    <table class="compare-table">
+      <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+      <tr><td>New rows missing from pivot</td><td>Source range wasn't refreshed or wasn't a Table</td><td>Refresh; convert source to a Table</td></tr>
+      <tr><td>Numbers show as Count instead of Sum</td><td>A blank or text cell exists in that column</td><td>Clean the column so every cell is numeric</td></tr>
+      <tr><td>Grouping by date fails</td><td>Dates stored as text, not real dates</td><td>Convert with DATEVALUE or Text-to-Columns</td></tr>
+      <tr><td>"Field name is not valid"</td><td>Blank or duplicate header in source</td><td>Give every column a unique, non-blank header</td></tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">F8</span> Common misconceptions</h3>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "PivotTables refresh live as I edit source cells."<br><span class="ok">✓ Reality:</span> they refresh only on demand — always click Refresh after editing source data.</div>
+    <div class="card misconception"><span class="x">✗ Myth:</span> "Power Pivot is a totally different tool from PivotTables."<br><span class="ok">✓ Reality:</span> it's the same PivotTable interface, just pointed at the Data Model instead of a single range.</div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">F9</span> Key takeaways</h3>
+    <ul class="takeaways">
+      <li>GETPIVOTDATA gives formulas that survive reordering</li>
+      <li>The Data Model extends pivoting across multiple related tables</li>
+      <li>Refresh is manual — build the habit or automate it with VBA/Table sources</li>
+      <li>Most pivot errors trace back to messy or inconsistent source data</li>
+    </ul>
+  </div>
+
+  <div class="quiz" id="quiz4" data-module="4">
+    <div class="quiz-head"><h3>Module 4 Quiz</h3><span class="cellref">4 questions</span></div>
+    <div class="quiz-body" id="quiz4Body"></div>
+  </div>
+</section>
+
+<!-- ================= FINAL CHALLENGE ================= -->
+<section class="module locked" id="finalChallenge">
+  <div class="mod-head"><span class="mod-num">★</span><h2>Final Practical Challenge</h2><span class="mod-diff">Capstone</span></div>
+  <div class="challenge">
+    <p><strong>Scenario:</strong> Your manager hands you the 3,000-row order log used throughout this tutorial and asks: <em>"Which sales rep is our strongest performer in the West region this year, and is their revenue trending up or down quarter over quarter?"</em></p>
+    <p>Plan out, in order, every PivotTable/PivotChart step you'd take to answer this — from field placement to the chart type you'd choose.</p>
+    <div class="exercise" style="border-color:var(--amber-deep); background:rgba(232,163,61,.06);">
+      <span class="tag" style="color:var(--amber);">Your plan</span>
+      <textarea placeholder="e.g. 1) Filter Region = West using Filters well or a slicer  2) Rows = Rep, Values = Sum of Revenue, sorted descending to find the top rep  3) Add Quarter to Columns or build a second pivot with Rows = Quarter, Filter = that rep, then insert a Line PivotChart..."></textarea>
+      <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('show'); markChallengeComplete();">Reveal a model answer</button>
+      <div class="reveal-content">
+        1) Add a Region slicer (or Filters well) set to "West" so every view stays scoped correctly. 2) Build Pivot A: Rows = Rep, Values = Sum of Revenue, sorted largest→smallest, to instantly surface the top performer. 3) Build Pivot B (or reshape): Rows = Quarter, Filter = that top Rep, Values = Sum of Revenue. 4) Insert a Line PivotChart from Pivot B — a line chart is correct here because the question is about a *trend over time*, not a one-time comparison. 5) Refresh both pivots before presenting, and consider a Timeline slicer if the manager wants to interactively scrub by quarter.
+      </div>
+    </div>
+    <button class="unlock-btn" id="finalBadgeBtn" style="display:none;" onclick="earnBadge('b5')">Claim Pivot Master badge 🏅</button>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">G1</span> Cheat sheet</h3>
+    <div class="cheat-grid">
+      <div class="cheat-card"><h4>Build</h4><code>Insert → PivotTable</code><code>Ctrl+T before pivoting</code></div>
+      <div class="cheat-card"><h4>Group dates</h4><code>Right-click → Group</code><code>Choose Months/Quarters/Years</code></div>
+      <div class="cheat-card"><h4>Change summary</h4><code>Right-click value → Value Field Settings</code></div>
+      <div class="cheat-card"><h4>Add a chart</h4><code>Analyze → PivotChart</code></div>
+      <div class="cheat-card"><h4>Interactive filter</h4><code>Insert → Slicer / Timeline</code></div>
+      <div class="cheat-card"><h4>Custom math</h4><code>Analyze → Fields, Items & Sets → Calculated Field</code></div>
+      <div class="cheat-card"><h4>Stable formula ref</h4><code>=GETPIVOTDATA(...)</code></div>
+      <div class="cheat-card"><h4>Update after edits</h4><code>Analyze → Refresh (Alt+F5)</code></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3><span class="cellref">G2</span> Summary notes</h3>
+    <p>A PivotTable is a live summarizing lens on flat, clean source data, built from four wells — Rows, Columns, Values, Filters. Grouping, sorting, and calculated fields refine what it reports. A PivotChart mirrors a PivotTable visually and updates whenever the table reshapes. Slicers and timelines add clickable, dashboard-style filtering. At mastery level, GETPIVOTDATA, the Data Model, and disciplined refresh habits are what separate reliable reporting from fragile one-off summaries.</p>
+    <button class="print-btn" onclick="window.print()">⎙ Print / save these notes as PDF</button>
+  </div>
+</section>
+
+<!-- CONTINUE LEARNING -->
+<section class="module locked" id="continueLearning">
+  <div class="mod-head"><span class="mod-num">→</span><h2>Continue Learning</h2></div>
+  <div class="resource-grid">
+    <div class="res-card"><h4>📚 Books</h4><ul>
+      <li>"Excel PivotTables and PivotCharts" — Bill Jelen (MrExcel)</li>
+      <li>"Pivot Table Data Crunching" — Bill Jelen &amp; Michael Alexander</li>
+      <li>"M is for Data Monkey" — Ken Puls &amp; Miguel Escobar (Power Query/Data Model)</li>
+    </ul></div>
+    <div class="res-card"><h4>📄 Documentation</h4><ul>
+      <li>Microsoft Support: "Create a PivotTable to analyze worksheet data"</li>
+      <li>Microsoft Support: "Create a PivotChart"</li>
+      <li>Microsoft Support: "Use slicers to filter data"</li>
+    </ul></div>
+    <div class="res-card"><h4>🔬 Research &amp; deeper reading</h4><ul>
+      <li>Microsoft DAX reference documentation (for Power Pivot measures)</li>
+      <li>"Data-Ink Ratio" — Edward Tufte, for chart-design principles applicable to PivotCharts</li>
+    </ul></div>
+    <div class="res-card"><h4>💬 Communities</h4><ul>
+      <li>r/excel (Reddit)</li>
+      <li>MrExcel Message Board</li>
+      <li>Chandoo.org forums</li>
+    </ul></div>
+    <div class="res-card"><h4>🏋️ Practice platforms</h4><ul>
+      <li>ExcelJet exercise files</li>
+      <li>Kaggle datasets (import a CSV and pivot it)</li>
+      <li>Microsoft Learn: Excel PivotTable module</li>
+    </ul></div>
+    <div class="res-card"><h4>🔎 Search keywords</h4>
+      <span class="kw">excel pivottable tutorial</span><span class="kw">pivotchart slicer</span><span class="kw">calculated field pivot table</span><span class="kw">GETPIVOTDATA formula</span><span class="kw">power pivot data model</span><span class="kw">pivot table group dates</span>
+    </div>
+    <div class="res-card" style="grid-column:1/-1;"><h4>🤖 AI prompts for further learning</h4><ul>
+      <li>"Give me a messy 200-row sales dataset description and have me practice cleaning it before pivoting."</li>
+      <li>"Quiz me on the difference between Data Model relationships and VLOOKUP joins."</li>
+      <li>"Walk me through building a DAX measure equivalent to a PivotTable Calculated Field."</li>
+      <li>"Critique this PivotChart choice for showing regional market share over 3 years."</li>
+    </ul></div>
+  </div>
+</section>
+
+</div>
+
+<footer>Interactive Learning Studio · PivotTables &amp; PivotCharts · Built for focused, single-session mastery.</footer>
+
+<script>
+/* ---------- THEME ---------- */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', ()=>{
+  const cur = document.body.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  themeToggle.textContent = next === 'dark' ? '◐' : '◑';
+});
+document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+
+/* ---------- STATE ---------- */
+let points = 0;
+const earnedBadges = new Set();
+function loadState(){
+  try{
+    const s = JSON.parse(localStorage.getItem('pivotStudioState')||'{}');
+    if(s.points) points = s.points;
+    if(s.badges) s.badges.forEach(b=>earnedBadges.add(b));
+    if(s.unlocked) s.unlocked.forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.classList.remove('locked');
+    });
+  }catch(e){}
+}
+function saveState(){
+  const unlocked = [...document.querySelectorAll('.module')].filter(m=>!m.classList.contains('locked')).map(m=>m.id);
+  localStorage.setItem('pivotStudioState', JSON.stringify({points, badges:[...earnedBadges], unlocked}));
+}
+function addPoints(n){
+  points += n;
+  document.getElementById('pointsDisplay').textContent = points;
+  saveState();
+}
+function earnBadge(id){
+  earnedBadges.add(id);
+  const el = document.querySelector('.badge[data-badge="'+id+'"]');
+  if(el) el.classList.add('earned');
+  saveState();
+}
+function updateProgress(){
+  const total = document.querySelectorAll('.module').length;
+  const unlocked = document.querySelectorAll('.module:not(.locked)').length;
+  const pct = Math.round((unlocked/total)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = pct+'%';
+}
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  document.getElementById('module1').scrollIntoView({behavior:'smooth'});
+});
+function markChallengeComplete(){
+  document.getElementById('finalBadgeBtn').style.display='inline-block';
+}
+
+/* ---------- QUIZ DATA ---------- */
+const quizzes = {
+  1:[
+    {q:"What does a PivotTable do to your original source data?", opts:["Deletes duplicate rows automatically","Leaves it completely unchanged","Converts it into a chart permanently","Sorts it alphabetically"], correct:1, exp:"A PivotTable reads from the source range and builds a separate summary — the original data is untouched."},
+    {q:"Which field well controls what appears as headings down the left side of a PivotTable?", opts:["Columns","Values","Rows","Filters"], correct:2, exp:"Rows determines the unique groups listed down the page."},
+    {q:"Which of these is required before building a reliable PivotTable?", opts:["A chart already exists on the sheet","Data is flat, with one header row and no blank rows","Every column is formatted as currency","The workbook has at least two sheets"], correct:1, exp:"PivotTables need clean, flat, consistently-typed data with a single header row."},
+    {q:"Which statement about the Filters well is correct?", opts:["It permanently deletes filtered-out rows from the sheet","It narrows the whole report without altering the source data","It only works on numeric fields","It replaces the need for Rows entirely"], correct:1, exp:"Filters (report filters) restrict what's summarized without touching or deleting the underlying data."}
+  ],
+  2:[
+    {q:"Right-clicking a date field's row labels and choosing Group lets you do what?", opts:["Delete all dates outside a range","Bucket individual dates into Months/Quarters/Years","Convert dates into text permanently","Sort dates in random order"], correct:1, exp:"Grouping collapses granular values into readable buckets like months or quarters."},
+    {q:"Which summary type would you use to find the largest single order in a region?", opts:["Sum","Average","Max","Count"], correct:2, exp:"Max returns the single highest value within each group."},
+    {q:"Calculated Fields in a PivotTable are computed on:", opts:["Each individual source row, then summed","The already-summarized totals","A random sample of rows","Only the first row of each group"], correct:1, exp:"Calculated Fields apply their formula to the aggregated totals, not row-by-row — important for ratios like margin %."},
+    {q:"If a PivotTable shows 'Count of Revenue' instead of 'Sum of Revenue', the most likely cause is:", opts:["The field was set to Filters instead of Values","A blank or text value exists somewhere in that column","The workbook is in light mode","Too many rows are grouped"], correct:1, exp:"Excel defaults to Count when it detects any non-numeric or blank cell in the value field's source column."}
+  ],
+  3:[
+    {q:"A PivotChart is best described as:", opts:["A static image pasted from the PivotTable","A chart bound live to a PivotTable's data cache","A separate chart unrelated to any PivotTable","Only available in the Data Model"], correct:1, exp:"PivotCharts stay linked to their PivotTable and update automatically as it reshapes."},
+    {q:"Which chart type is best for showing monthly revenue trend over a year?", opts:["Pie chart","Line chart","Single-cell heat map","Doughnut chart"], correct:1, exp:"Line charts are built for showing change over a continuous time axis."},
+    {q:"What is a key advantage of a slicer over a standard filter dropdown?", opts:["It permanently sorts the data","It's a clickable, visual filter that's easier for non-experts to use","It only works with text fields","It removes the need for a PivotTable"], correct:1, exp:"Slicers turn filtering into clickable buttons, ideal for dashboard viewers unfamiliar with Excel menus."},
+    {q:"Via Report Connections, a single slicer can:", opts:["Only ever control one PivotTable","Control multiple PivotTables/Charts sharing the same source","Convert a PivotTable into a formula","Disable refresh on a workbook"], correct:1, exp:"Report Connections let one slicer drive several linked PivotTables/Charts simultaneously."}
+  ],
+  4:[
+    {q:"What is the main advantage of GETPIVOTDATA over a plain cell reference?", opts:["It's shorter to type","It keeps returning the correct value even if rows are reordered","It works without a PivotTable existing","It automatically creates a chart"], correct:1, exp:"GETPIVOTDATA references a value by field/item name, so it survives sorting and reordering."},
+    {q:"The Data Model (Power Pivot) is most useful when:", opts:["You only ever have one small flat table","You need to pivot across multiple related tables at once","You want to disable PivotCharts","You need to permanently alter source data"], correct:1, exp:"The Data Model lets you build relationships between multiple tables and pivot across them without pre-merging."},
+    {q:"When you edit values in the source data, a connected PivotTable will:", opts:["Update instantly with no action needed","Update only after you Refresh it","Delete itself automatically","Convert to a PivotChart"], correct:1, exp:"PivotTables refresh on demand only — always click Refresh (or Refresh All) after editing source data."},
+    {q:"A PivotTable error 'Field name is not valid' most often means:", opts:["The workbook has too many sheets","A source column header is blank or duplicated","The chart type is unsupported","The PivotTable is in light mode"], correct:1, exp:"PivotTables require every source column to have a unique, non-blank header."}
+  ]
+};
+
+function buildQuiz(moduleNum){
+  const data = quizzes[moduleNum];
+  const body = document.getElementById('quiz'+moduleNum+'Body');
+  let html = '';
+  data.forEach((item,i)=>{
+    html += `<div class="q-item" data-qindex="${i}">
+      <div class="q-text">${i+1}. ${item.q}</div>
+      <div class="q-opts">
+        ${item.opts.map((o,oi)=>`<div class="q-opt" data-oindex="${oi}">${o}</div>`).join('')}
+      </div>
+      <div class="q-explain"></div>
+    </div>`;
+  });
+  html += `<button class="quiz-submit" id="submit${moduleNum}">Submit Answers</button>
+  <div class="quiz-result" id="result${moduleNum}">
+    <div class="score-big" id="scoreBig${moduleNum}"></div>
+    <p id="scoreMsg${moduleNum}"></p>
+    <button class="unlock-btn" id="unlockBtn${moduleNum}">Unlock Next Section →</button>
+  </div>`;
+  body.innerHTML = html;
+
+  const answers = new Array(data.length).fill(null);
+  body.querySelectorAll('.q-item').forEach(qItem=>{
+    const qi = +qItem.dataset.qindex;
+    qItem.querySelectorAll('.q-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        if(document.getElementById('result'+moduleNum).classList.contains('show')) return;
+        qItem.querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[qi] = +opt.dataset.oindex;
+      });
+    });
+  });
+
+  document.getElementById('submit'+moduleNum).addEventListener('click', ()=>{
+    if(answers.includes(null)){
+      alert('Please answer all questions before submitting.');
+      return;
+    }
+    let correctCount = 0;
+    data.forEach((item,i)=>{
+      const qItem = body.querySelector('.q-item[data-qindex="'+i+'"]');
+      const opts = qItem.querySelectorAll('.q-opt');
+      opts.forEach((o,oi)=>{
+        if(oi === item.correct) o.classList.add('correct');
+        else if(oi === answers[i]) o.classList.add('incorrect');
+      });
+      if(answers[i]===item.correct) correctCount++;
+      const exp = qItem.querySelector('.q-explain');
+      exp.textContent = 'Explanation: ' + item.exp;
+      exp.classList.add('show');
+    });
+    const pct = Math.round((correctCount/data.length)*100);
+    addPoints(correctCount*10 + (pct===100?20:0));
+    document.getElementById('submit'+moduleNum).disabled = true;
+    const resultBox = document.getElementById('result'+moduleNum);
+    resultBox.classList.add('show');
+    document.getElementById('scoreBig'+moduleNum).textContent = correctCount+'/'+data.length+' ('+pct+'%)';
+    let msg = pct===100 ? 'Perfect score! Bullseye bonus +20pts awarded.' : pct>=75 ? 'Great work — solid grasp of this module.' : pct>=50 ? 'Good effort — consider reviewing the sections above before continuing.' : 'Worth another pass through this module before moving on.';
+    document.getElementById('scoreMsg'+moduleNum).textContent = msg;
+    earnBadge('b'+moduleNum);
+    updateProgress();
+  });
+
+  document.getElementById('unlockBtn'+moduleNum) && document.getElementById('unlockBtn'+moduleNum);
+}
+
+[1,2,3,4].forEach(buildQuiz);
+
+/* wire unlock buttons after build (need separate pass since IDs created dynamically) */
+function wireUnlock(moduleNum, nextId){
+  document.getElementById('unlockBtn'+moduleNum).addEventListener('click', ()=>{
+    const nextEl = document.getElementById(nextId);
+    nextEl.classList.remove('locked');
+    saveState();
+    updateProgress();
+    nextEl.scrollIntoView({behavior:'smooth'});
+  });
+}
+wireUnlock(1,'module2');
+wireUnlock(2,'module3');
+wireUnlock(3,'module4');
+wireUnlock(4,'finalChallenge');
+document.getElementById('finalBadgeBtn') && (()=>{
+  // also unlock continue-learning section once challenge revealed
+})();
+// unlock continue learning whenever final challenge reveal happens
+const origMark = markChallengeComplete;
+markChallengeComplete = function(){
+  origMark();
+  document.getElementById('continueLearning').classList.remove('locked');
+  saveState();
+  updateProgress();
+};
+
+/* ---------- DATASET for live demos ---------- */
+const orders = [
+  {region:'West',product:'Desk',rep:'Nia',revenue:3600},
+  {region:'East',product:'Chair',rep:'Omar',revenue:4500},
+  {region:'West',product:'Chair',rep:'Nia',revenue:2700},
+  {region:'East',product:'Desk',rep:'Priya',revenue:2700},
+  {region:'West',product:'Desk',rep:'Omar',revenue:5400},
+  {region:'North',product:'Chair',rep:'Priya',revenue:1800},
+  {region:'South',product:'Desk',rep:'Nia',revenue:3900},
+  {region:'East',product:'Chair',rep:'Priya',revenue:2100},
+  {region:'North',product:'Desk',rep:'Omar',revenue:4800},
+  {region:'South',product:'Chair',rep:'Nia',revenue:2400},
+  {region:'West',product:'Chair',rep:'Priya',revenue:3300},
+  {region:'North',product:'Desk',rep:'Nia',revenue:2100},
+];
+
+function aggregate(field, mode){
+  const groups = {};
+  orders.forEach(o=>{
+    const key = o[field];
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(o.revenue);
+  });
+  const rows = Object.keys(groups).map(k=>{
+    const vals = groups[k];
+    let val;
+    if(mode==='sum') val = vals.reduce((a,b)=>a+b,0);
+    else if(mode==='count') val = vals.length;
+    else val = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+    return {label:k, val};
+  });
+  return rows;
+}
+
+function renderDemo(){
+  const field = document.getElementById('demoRows').value;
+  const mode = document.getElementById('demoValues').value;
+  const rows = aggregate(field, mode);
+  const label = mode==='sum'?'Sum of Revenue':mode==='count'?'Count of Orders':'Average Revenue';
+  let html = `<tr><th>${field}</th><th>${label}</th></tr>`;
+  let grand = 0;
+  rows.forEach(r=>{
+    html += `<tr><td>${r.label}</td><td>${mode==='count'?r.val:'$'+r.val.toLocaleString()}</td></tr>`;
+    grand += r.val;
+  });
+  const grandVal = mode==='avg' ? Math.round(grand/rows.length) : grand;
+  html += `<tr class="grand"><td>Grand Total</td><td>${mode==='count'?grandVal:'$'+grandVal.toLocaleString()}</td></tr>`;
+  document.getElementById('demoOut').innerHTML = html;
+}
+document.getElementById('demoRows').addEventListener('change', renderDemo);
+document.getElementById('demoValues').addEventListener('change', renderDemo);
+renderDemo();
+
+/* mini bar chart for module 3 */
+function renderChart(){
+  const rows = aggregate('region','sum');
+  const max = Math.max(...rows.map(r=>r.val));
+  const box = document.getElementById('chartDemo');
+  box.innerHTML = rows.map(r=>{
+    const h = Math.max(10, Math.round((r.val/max)*110));
+    return `<div class="bar" style="height:${h}px;"><span class="val">$${r.val.toLocaleString()}</span><span class="lbl">${r.label}</span></div>`;
+  }).join('');
+}
+renderChart();
+
+/* ---------- DRAG AND DROP EXERCISE ---------- */
+document.querySelectorAll('.draggable').forEach(chip=>{
+  chip.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain', chip.dataset.field);
+  });
+});
+document.querySelectorAll('.dropzone').forEach(zone=>{
+  zone.addEventListener('dragover', e=>{e.preventDefault(); zone.classList.add('over');});
+  zone.addEventListener('dragleave', ()=>zone.classList.remove('over'));
+  zone.addEventListener('drop', e=>{
+    e.preventDefault();
+    zone.classList.remove('over');
+    const field = e.dataTransfer.getData('text/plain');
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.textContent = field;
+    zone.appendChild(chip);
+    checkDrag();
+  });
+});
+function checkDrag(){
+  const zones = document.querySelectorAll('.dropzone');
+  let placed = 0, correct = 0;
+  zones.forEach(z=>{
+    const chips = z.querySelectorAll('.chip');
+    chips.forEach(c=>{
+      placed++;
+      if(c.textContent === z.dataset.answer) correct++;
+    });
+  });
+  const fb = document.getElementById('dragFeedback');
+  if(placed >= 3){
+    fb.textContent = correct===3 ? '✓ Correct! Rep→Rows, Product→Columns, Revenue→Values.' : `You placed ${correct}/3 correctly. Hint: think about what should go down the page vs. across the top vs. being summed.`;
+    fb.style.color = correct===3 ? 'var(--green)' : 'var(--amber)';
+  }
+}
+
+/* ---------- INIT ---------- */
+loadState();
+document.getElementById('pointsDisplay').textContent = points;
+earnedBadges.forEach(id=>{
+  const el = document.querySelector('.badge[data-badge="'+id+'"]');
+  if(el) el.classList.add('earned');
+});
+updateProgress();
+</script>
+</body>
+</html>
