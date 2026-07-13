@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Deal Ledger — Agency Sales Pipeline Workflow</title>
+<style>
+:root{
+  --ink:#12151A;
+  --panel:#181C24;
+  --panel-raised:#1E232C;
+  --rule:#2B313D;
+  --rule-soft:#232833;
+  --text:#EDEFF3;
+  --text-dim:#98A1B2;
+  --text-faint:#5B6373;
+  --teal:#2FBF9F;
+  --teal-dim:#1E7A64;
+  --amber:#E8A33D;
+  --amber-dim:#8C6323;
+  --red:#E0637A;
+  --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', Consolas, 'Courier New', monospace;
+  --radius:2px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--font-body);
+  line-height:1.55;
+  min-height:100vh;
+}
+body.light{
+  --ink:#F3F1EA;
+  --panel:#FFFFFF;
+  --panel-raised:#FBFAF6;
+  --rule:#DEDACD;
+  --rule-soft:#E9E5D8;
+  --text:#1B1D1F;
+  --text-dim:#5C5A52;
+  --text-faint:#8B887E;
+}
+::selection{background:var(--teal); color:#04120D;}
+a{color:inherit;}
+button{font-family:inherit; cursor:pointer;}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+}
+
+/* ===== Top Bar ===== */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 28px;
+  background:rgba(18,21,26,.9);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+body.light .topbar{background:rgba(243,241,234,.92);}
+.brand{display:flex; align-items:baseline; gap:10px;}
+.brand-mark{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.14em;
+  color:var(--ink); background:var(--teal);
+  padding:3px 7px; border-radius:2px; font-weight:700;
+}
+.brand-name{font-family:var(--font-display); font-size:19px; letter-spacing:.01em;}
+.brand-sub{font-size:11px; color:var(--text-faint); font-family:var(--font-mono); letter-spacing:.04em;}
+.topbar-actions{display:flex; align-items:center; gap:10px;}
+.icon-btn{
+  background:transparent; border:1px solid var(--rule); color:var(--text-dim);
+  width:34px; height:34px; border-radius:2px; display:flex; align-items:center; justify-content:center;
+  transition:all .15s ease; font-size:15px;
+}
+.icon-btn:hover{border-color:var(--teal); color:var(--teal);}
+.icon-btn.active{color:var(--amber); border-color:var(--amber);}
+.print-btn{
+  background:transparent; border:1px solid var(--rule); color:var(--text-dim);
+  padding:0 14px; height:34px; border-radius:2px; font-size:12px; letter-spacing:.03em;
+  transition:all .15s ease;
+}
+.print-btn:hover{border-color:var(--teal); color:var(--teal);}
+
+/* ===== Hero ===== */
+.hero{
+  padding:64px 28px 40px;
+  max-width:1180px; margin:0 auto;
+  border-bottom:1px solid var(--rule);
+}
+.hero-eyebrow{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--teal); margin-bottom:18px; display:flex; align-items:center; gap:10px;
+}
+.hero-eyebrow::before{content:''; width:22px; height:1px; background:var(--teal);}
+.hero h1{
+  font-family:var(--font-display); font-weight:400;
+  font-size:clamp(32px,5vw,54px); line-height:1.08; letter-spacing:-.01em;
+  max-width:820px; margin-bottom:20px;
+}
+.hero h1 em{font-style:italic; color:var(--teal);}
+.hero p.lede{
+  font-size:16px; color:var(--text-dim); max-width:640px; margin-bottom:32px;
+}
+.hero-stats{display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--rule); margin-top:8px;}
+.hero-stat{
+  flex:1; min-width:140px; padding:16px 20px 0; border-right:1px solid var(--rule);
+}
+.hero-stat:last-child{border-right:none;}
+.hero-stat .num{font-family:var(--font-mono); font-size:22px; color:var(--teal);}
+.hero-stat .lbl{font-size:11px; color:var(--text-faint); letter-spacing:.04em; text-transform:uppercase; margin-top:4px;}
+
+/* ===== Pipeline Rail (signature element) ===== */
+.rail-wrap{
+  max-width:1180px; margin:0 auto; padding:36px 28px 8px;
+  position:sticky; top:63px; z-index:40;
+  background:var(--ink);
+  border-bottom:1px solid var(--rule);
+}
+body.light .rail-wrap{background:var(--ink);}
+.rail{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:0;
+  padding-bottom:28px;
+}
+.rail-line{
+  position:absolute; left:0; right:0; top:19px; height:1px; background:var(--rule);
+  z-index:0;
+}
+.rail-line-fill{
+  position:absolute; left:0; top:19px; height:1px; background:var(--teal);
+  z-index:1; transition:width .4s ease;
+  width:0%;
+}
+.rail-node{
+  position:relative; z-index:2; display:flex; flex-direction:column; align-items:flex-start;
+  background:transparent; border:none; color:var(--text); text-align:left; padding:0 14px 0 0;
+}
+.rail-node .dot{
+  width:38px; height:38px; border-radius:50%;
+  background:var(--panel); border:1px solid var(--rule);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
+  transition:all .2s ease; margin-bottom:10px;
+}
+.rail-node.done .dot{background:var(--teal); border-color:var(--teal); color:#04120D; font-weight:700;}
+.rail-node.current .dot{border-color:var(--amber); color:var(--amber); box-shadow:0 0 0 4px rgba(232,163,61,.12);}
+.rail-node .stage-name{font-size:12.5px; font-weight:600; letter-spacing:.01em;}
+.rail-node .stage-time{font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); margin-top:2px;}
+.rail-node:hover .dot{border-color:var(--teal);}
+
+/* ===== Layout ===== */
+.layout{
+  max-width:1180px; margin:0 auto; padding:36px 28px 100px;
+  display:grid; grid-template-columns:220px 1fr; gap:36px;
+}
+.side{position:sticky; top:230px; align-self:start; height:fit-content;}
+.side h4{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:10px;}
+.side-list{list-style:none; display:flex; flex-direction:column; gap:2px; margin-bottom:26px;}
+.side-list button{
+  width:100%; text-align:left; background:transparent; border:none; color:var(--text-dim);
+  font-size:12.5px; padding:6px 8px; border-left:2px solid transparent; border-radius:0;
+  transition:all .15s ease;
+}
+.side-list button:hover{color:var(--text); background:var(--panel-raised);}
+.side-list button.active{color:var(--teal); border-left-color:var(--teal); background:var(--panel-raised);}
+.side-progress{font-family:var(--font-mono); font-size:11px; color:var(--text-faint); padding:10px 0; border-top:1px solid var(--rule);}
+.side-progress b{color:var(--teal);}
+
+.main{min-width:0;}
+
+/* ===== Stage Card ===== */
+.stage-card{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  margin-bottom:24px;
+  overflow:hidden;
+  scroll-margin-top:260px;
+}
+.stage-head{
+  padding:26px 28px 22px;
+  border-bottom:1px solid var(--rule);
+  display:flex; justify-content:space-between; align-items:flex-start; gap:20px;
+}
+.stage-head-left{display:flex; gap:18px; align-items:flex-start;}
+.stage-num{
+  font-family:var(--font-mono); font-size:13px; color:var(--teal);
+  border:1px solid var(--teal-dim); border-radius:50%; width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px;
+}
+.stage-title{font-family:var(--font-display); font-size:24px; margin-bottom:6px;}
+.stage-desc{font-size:13.5px; color:var(--text-dim); max-width:520px;}
+.stage-meta{display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;}
+.pill{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em;
+  padding:4px 9px; border:1px solid var(--rule); border-radius:20px; color:var(--text-dim); white-space:nowrap;
+}
+.check-btn{
+  display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--text-dim);
+  background:transparent; border:1px solid var(--rule); padding:6px 11px; border-radius:20px;
+  transition:all .15s ease;
+}
+.check-btn .box{width:12px; height:12px; border:1px solid var(--text-faint); border-radius:3px; flex-shrink:0;}
+.check-btn.on{border-color:var(--teal); color:var(--teal);}
+.check-btn.on .box{background:var(--teal); border-color:var(--teal);}
+
+.stage-body{padding:24px 28px 8px;}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:22px;}
+@media (max-width:720px){.grid2{grid-template-columns:1fr;}}
+
+.block h5{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-faint); margin-bottom:10px; display:flex; align-items:center; gap:6px;
+}
+.block ul{list-style:none;}
+.block ul li{
+  font-size:13.5px; color:var(--text); padding:5px 0 5px 16px; position:relative; border-bottom:1px solid var(--rule-soft);
+}
+.block ul li:last-child{border-bottom:none;}
+.block ul li::before{content:'—'; position:absolute; left:0; color:var(--text-faint);}
+
+.tool-list{display:flex; flex-direction:column; gap:10px;}
+.tool-card{
+  border:1px solid var(--rule); border-radius:2px; padding:12px 14px; background:var(--panel-raised);
+}
+.tool-card .tool-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;}
+.tool-card .tool-name{font-size:13.5px; font-weight:600;}
+.tool-card .tool-tag{font-family:var(--font-mono); font-size:9.5px; color:var(--teal); border:1px solid var(--teal-dim); padding:1px 6px; border-radius:20px;}
+.tool-card .tool-why{font-size:12.5px; color:var(--text-dim);}
+.alt-tools{font-size:11.5px; color:var(--text-faint); margin-top:8px;}
+.alt-tools b{color:var(--text-dim); font-weight:500;}
+
+.prompt-box{
+  background:var(--ink); border:1px solid var(--rule); border-left:2px solid var(--teal);
+  padding:14px 16px; font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
+  border-radius:2px; margin-bottom:10px; position:relative; line-height:1.6;
+}
+body.light .prompt-box{background:#F7F5EE;}
+.copy-btn{
+  position:absolute; top:10px; right:10px; background:var(--panel); border:1px solid var(--rule);
+  color:var(--text-faint); font-size:10px; padding:3px 8px; border-radius:20px; font-family:var(--font-body);
+  transition:all .15s ease;
+}
+.copy-btn:hover{color:var(--teal); border-color:var(--teal);}
+.copy-btn.copied{color:var(--teal); border-color:var(--teal);}
+
+.mistake-row{display:flex; gap:10px; font-size:13px; padding:6px 0; align-items:flex-start;}
+.mistake-row .x{color:var(--red); font-family:var(--font-mono); font-size:11px; margin-top:3px;}
+.mistake-row .fix{color:var(--text-faint); font-size:11.5px;}
+
+.notes-area{margin-top:20px; border-top:1px solid var(--rule); padding-top:16px;}
+.notes-area textarea{
+  width:100%; min-height:64px; background:var(--panel-raised); border:1px solid var(--rule); border-radius:2px;
+  color:var(--text); font-family:var(--font-body); font-size:13px; padding:10px 12px; resize:vertical;
+}
+.notes-area textarea:focus{outline:1px solid var(--teal); border-color:var(--teal);}
+.notes-label{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px; display:block;}
+
+.stage-foot{padding:16px 28px 24px;}
+
+/* ===== Decision tree ===== */
+.dtree{border:1px solid var(--rule); background:var(--panel-raised); border-radius:2px; padding:20px; font-size:13px;}
+.dtree .q{font-weight:600; margin-bottom:10px;}
+.dtree-opt{display:flex; gap:8px; align-items:flex-start; padding:8px 0; border-top:1px solid var(--rule-soft);}
+.dtree-opt:first-of-type{border-top:none;}
+.dtree-opt .arrow{color:var(--teal); font-family:var(--font-mono);}
+.dtree-opt .lead{color:var(--text-dim); font-size:12px;}
+
+/* ===== Sections after stages ===== */
+.section-block{
+  background:var(--panel); border:1px solid var(--rule); border-radius:2px; padding:28px; margin-bottom:24px;
+}
+.section-block h3{font-family:var(--font-display); font-size:20px; margin-bottom:16px;}
+.stack-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:12px;}
+.stack-item{border:1px solid var(--rule); padding:12px 14px; border-radius:2px;}
+.stack-item .role{font-family:var(--font-mono); font-size:10px; color:var(--teal); text-transform:uppercase; letter-spacing:.06em;}
+.stack-item .tname{font-size:14px; font-weight:600; margin:4px 0 3px;}
+.stack-item .tdesc{font-size:11.5px; color:var(--text-faint);}
+
+.tag-cloud{display:flex; flex-wrap:wrap; gap:8px;}
+.tag{
+  font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); border:1px solid var(--rule);
+  padding:5px 11px; border-radius:20px;
+}
+.link-list{display:flex; flex-direction:column; gap:10px;}
+.link-list a{font-size:13.5px; color:var(--text); text-decoration:none; border-bottom:1px dotted var(--rule);}
+.link-list a:hover{color:var(--teal); border-color:var(--teal);}
+.link-list .lmeta{font-size:11.5px; color:var(--text-faint); margin-top:2px;}
+
+.future-list{display:flex; flex-direction:column; gap:14px;}
+.future-item{display:flex; gap:14px;}
+.future-item .fnum{font-family:var(--font-mono); color:var(--amber); font-size:12px; flex-shrink:0; margin-top:2px;}
+.future-item .ftitle{font-size:13.5px; font-weight:600;}
+.future-item .fdesc{font-size:12.5px; color:var(--text-dim);}
+
+footer{
+  max-width:1180px; margin:0 auto; padding:30px 28px 60px; color:var(--text-faint); font-size:11.5px;
+  font-family:var(--font-mono); border-top:1px solid var(--rule); text-align:center;
+}
+
+/* Print */
+@media print{
+  .topbar,.rail-wrap,.side,.icon-btn,.print-btn,.copy-btn,.check-btn{display:none !important;}
+  body{background:#fff; color:#111;}
+  .layout{grid-template-columns:1fr; padding:0;}
+  .stage-card{border:1px solid #ccc; break-inside:avoid;}
+}
+
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr;}
+  .side{display:none;}
+  .rail{grid-template-columns:repeat(5,1fr);}
+  .rail-node .stage-name{font-size:10.5px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="brand-mark">01→05</span>
+    <div>
+      <div class="brand-name">The Deal Ledger</div>
+      <div class="brand-sub">AGENCY SALES PIPELINE · LEAD TO HANDOFF</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="icon-btn" id="themeToggle" title="Toggle light/dark">☾</button>
+    <button class="icon-btn" id="bookmarkToggle" title="Show bookmarks">★</button>
+    <button class="print-btn" id="printBtn">Print guide</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow">End-to-end workflow · Freelance &amp; consulting agencies</div>
+  <h1>Run every deal like a <em>ledger</em>, not a guessing game.</h1>
+  <p class="lede">A complete, stage-by-stage AI-assisted process for taking a service-business lead from first contact to signed contract and clean handoff — with the tools, prompts, and judgment calls for each step.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">5</div><div class="lbl">Pipeline stages</div></div>
+    <div class="hero-stat"><div class="num">~14–21d</div><div class="lbl">Typical cycle time</div></div>
+    <div class="hero-stat"><div class="num">12+</div><div class="lbl">AI tools mapped</div></div>
+    <div class="hero-stat"><div class="num">18</div><div class="lbl">Ready-to-use prompts</div></div>
+  </div>
+</div>
+
+<div class="rail-wrap">
+  <div class="rail" id="rail">
+    <div class="rail-line"></div>
+    <div class="rail-line-fill" id="railFill"></div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="side">
+    <h4>Pipeline stages</h4>
+    <ul class="side-list" id="sideStages"></ul>
+    <h4>Closing materials</h4>
+    <ul class="side-list">
+      <li><button data-jump="summary">Workflow summary</button></li>
+      <li><button data-jump="stack">Recommended AI stack</button></li>
+      <li><button data-jump="learn">Learning resources</button></li>
+      <li><button data-jump="community">Communities</button></li>
+      <li><button data-jump="keywords">Search keywords</button></li>
+      <li><button data-jump="prompts">Extra prompts</button></li>
+      <li><button data-jump="future">Future automation</button></li>
+    </ul>
+    <div class="side-progress"><b id="progressPct">0%</b> of tasks checked off</div>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<footer>THE DEAL LEDGER — GENERATED WORKFLOW · YOUR PROGRESS SAVES LOCALLY IN THIS BROWSER · NO DATA LEAVES YOUR DEVICE</footer>
+
+<script>
+/* ================= DATA ================= */
+const STAGES = [
+{
+  id:"lead",
+  num:"01",
+  name:"Lead Capture",
+  time:"1–2 days",
+  title:"Lead Capture & First Contact",
+  desc:"Turn inbound interest and outbound prospecting into a qualified conversation, fast enough that the lead is still warm.",
+  objectives:[
+    "Respond to every inbound inquiry within 2 business hours",
+    "Build a short list of outbound targets that match your ideal client profile",
+    "Get a discovery call booked, not just a reply"
+  ],
+  tasks:[
+    "Triage inbound messages (site form, DMs, referrals) into a single tracker",
+    "Research each lead's business, recent news, and likely budget tier",
+    "Send a personalized first-touch message within hours, not days",
+    "Offer 2–3 concrete call times instead of asking 'when works?'"
+  ],
+  tools:[
+    {name:"ChatGPT / Claude", tag:"research", why:"Summarizes a prospect's website, LinkedIn, and recent news into a 5-line brief before you write to them."},
+    {name:"Clay", tag:"enrichment", why:"Auto-enriches inbound leads with firmographic data and scores fit so you triage in seconds, not minutes."},
+    {name:"Superhuman AI / Missive", tag:"inbox", why:"Drafts fast, on-brand first replies directly inside your inbox so nothing sits unanswered overnight."}
+  ],
+  alt:"Alternatives: Perplexity for faster company research, Lavender for email quality scoring, HubSpot free CRM for lead capture forms.",
+  prompts:[
+    "Summarize this company's website in 5 bullet points: what they sell, who they sell to, recent news, and one likely pain point a [your service] agency could solve. URL: [paste]",
+    "Write a warm, specific first-reply email to a lead who filled out my contact form asking about [service]. Reference their message: \"[paste message]\". Keep it under 90 words, end with 2 call time options."
+  ],
+  best:[
+    "Reply speed beats reply polish — a fast, decent answer wins more deals than a perfect slow one",
+    "Always reference something specific to their business, never a generic template line",
+    "Log every lead the moment it arrives, before you forget where it came from"
+  ],
+  mistakes:[
+    {x:"Sending a generic 'thanks for reaching out' template", fix:"→ costs you the personalization edge that wins first impressions"},
+    {x:"Letting AI-drafted outreach go out unedited", fix:"→ always read it aloud once before sending; AI over-formalizes"},
+    {x:"Qualifying too late, after the call is booked", fix:"→ do a 2-minute fit check before you offer times"}
+  ],
+  output:"A logged, enriched lead with a scheduled discovery call and a one-page context brief.",
+  efficiency:"Keep a saved 'first-touch' prompt template with placeholders — reuse it instead of rewriting the AI prompt each time."
+},
+{
+  id:"qualify",
+  num:"02",
+  name:"Qualification",
+  time:"2–4 days",
+  title:"Discovery Call & Qualification",
+  desc:"Confirm the lead has a real problem, budget, authority, and timeline before you invest hours in a proposal.",
+  objectives:[
+    "Run a structured discovery call that surfaces the real problem, not just the stated request",
+    "Confirm budget range and decision-making process",
+    "Decide go / no-go on writing a proposal"
+  ],
+  tasks:[
+    "Prepare 6–8 discovery questions tailored to this prospect beforehand",
+    "Record and transcribe the call (with permission)",
+    "Extract pains, goals, budget signals, and objections from the transcript",
+    "Score the lead against your BANT/fit criteria and decide whether to proceed"
+  ],
+  tools:[
+    {name:"Fireflies.ai / Fathom", tag:"transcription", why:"Records and transcribes the call automatically, then generates an action-item summary you can act on immediately after hanging up."},
+    {name:"Claude / ChatGPT", tag:"analysis", why:"Turns a messy call transcript into a structured qualification brief: pain, budget, timeline, decision-maker, objections."},
+    {name:"Notion AI", tag:"CRM notes", why:"Keeps qualification notes and scoring in the same workspace as your pipeline tracker, searchable later."}
+  ],
+  alt:"Alternatives: Otter.ai for transcription, Gong for larger teams needing call analytics, Airtable for a lightweight scoring board.",
+  prompts:[
+    "Here is a discovery call transcript with a prospective client: [paste transcript]. Extract: (1) their stated problem, (2) the underlying business impact, (3) budget signals, (4) decision-making process, (5) any objections raised. Format as a short brief.",
+    "Based on this qualification brief: [paste], score this lead 1-10 on budget fit, urgency, and decision authority for a [your service] engagement, and recommend go/no-go with one sentence of reasoning."
+  ],
+  best:[
+    "Ask about budget indirectly first ('what have you budgeted for something like this?') before naming numbers",
+    "Listen for the difference between the stated ask and the real underlying problem",
+    "Write the qualification brief within an hour of the call while context is fresh"
+  ],
+  mistakes:[
+    {x:"Skipping budget discussion to avoid awkwardness", fix:"→ leads straight to a proposal mismatch and wasted work"},
+    {x:"Treating every 'interested' lead as qualified", fix:"→ interest ≠ authority or budget; score before proceeding"},
+    {x:"Letting AI infer budget/authority not actually said on the call", fix:"→ mark unclear signals as 'unknown', don't let the model guess"}
+  ],
+  output:"A qualification brief with a clear go/no-go decision and the inputs needed to scope a proposal.",
+  efficiency:"Build a reusable discovery question bank once, then ask AI to select the 6 most relevant for each specific prospect."
+},
+{
+  id:"proposal",
+  num:"03",
+  name:"Proposal",
+  time:"3–5 days",
+  title:"Scoping & Proposal Creation",
+  desc:"Translate the qualification brief into a scoped offer and a proposal document the client can say yes to without back-and-forth.",
+  objectives:[
+    "Scope the engagement into clear deliverables, timeline, and pricing",
+    "Produce a polished proposal document in hours, not days",
+    "Anticipate and pre-answer likely objections inside the proposal itself"
+  ],
+  tasks:[
+    "Draft a scope of work from the qualification brief",
+    "Choose a pricing model (fixed, retainer, milestone) and set numbers",
+    "Generate the proposal draft, then edit for voice and accuracy",
+    "Design/format the proposal into a client-ready document",
+    "Send with a short Loom-style walkthrough if the deal is high-value"
+  ],
+  tools:[
+    {name:"Claude / ChatGPT", tag:"drafting", why:"Turns a scope outline into full proposal prose — problem framing, approach, deliverables, timeline — in your voice with a style prompt."},
+    {name:"PandaDoc / Proposify", tag:"proposal design", why:"Templated, trackable proposal documents with e-signature and view-analytics so you know when a client opens it."},
+    {name:"Claude for Word / Canva Magic Design", tag:"formatting", why:"Turns the drafted text into a formatted, on-brand document without manual layout work."}
+  ],
+  alt:"Alternatives: Qwilr for interactive web-based proposals, Better Proposals, or a clean Google Doc for smaller/simpler engagements.",
+  prompts:[
+    "Write a scope-of-work section for a proposal. Client problem: [paste from qualification brief]. Our approach: [bullets]. Deliverables: [bullets]. Write in a confident, plain-English consulting tone, no jargon, under 250 words.",
+    "Review this proposal draft and list any objections a cautious client CFO might raise about price, timeline, or scope: [paste draft]. For each, suggest a one-sentence pre-emptive answer to weave into the doc."
+  ],
+  best:[
+    "Lead the proposal with the client's problem in their own words, not your service list",
+    "Price the value/outcome, then show the deliverables — not the other way around",
+    "Keep the actual document to 3–5 pages; length signals uncertainty, not thoroughness"
+  ],
+  mistakes:[
+    {x:"Sending a generic template with find-and-replace client names", fix:"→ clients can tell, and it undercuts trust right before the ask"},
+    {x:"Burying pricing on the last page after a wall of text", fix:"→ put pricing clearly, once decision-relevant context is set"},
+    {x:"Letting AI invent deliverables not discussed on the call", fix:"→ proofread scope line-by-line against your qualification notes"}
+  ],
+  output:"A sent, tracked proposal document with clear scope, pricing, and timeline.",
+  efficiency:"Keep a 'proposal skeleton' prompt with your standard sections — feed in only the variable client details each time."
+},
+{
+  id:"close",
+  num:"04",
+  name:"Negotiation & Close",
+  time:"3–7 days",
+  title:"Negotiation & Closing",
+  desc:"Handle objections and revisions confidently, and move the signed agreement over the line without scope or price erosion.",
+  objectives:[
+    "Respond to objections and revision requests same-day",
+    "Protect margin while staying flexible on non-critical terms",
+    "Get a signature and first payment scheduled"
+  ],
+  tasks:[
+    "Log every objection and question raised post-send",
+    "Draft objection responses that hold your position without sounding defensive",
+    "Revise the proposal if scope genuinely changes (not just to appease)",
+    "Send the contract and first invoice once verbally agreed"
+  ],
+  tools:[
+    {name:"Claude / ChatGPT", tag:"objection handling", why:"Drafts calm, specific responses to price or scope pushback that hold your position while acknowledging the client's concern."},
+    {name:"PandaDoc / DocuSign", tag:"e-signature", why:"Gets contracts signed and tracked without a print-sign-scan loop that stalls momentum."},
+    {name:"Stripe / QuickBooks", tag:"invoicing", why:"Sends the first invoice the moment the contract is signed, keeping cash flow tied directly to the close."}
+  ],
+  alt:"Alternatives: HelloSign for lighter e-signature needs, Wave for solo-freelancer invoicing, a well-templated Notion doc for simple retainers.",
+  prompts:[
+    "The client said: \"[paste objection, e.g. price is higher than expected]\". Draft a confident, non-defensive response that reframes around value and offers one small concession without discounting the core price.",
+    "Rewrite this contract clause in plain English so a non-lawyer client can understand exactly what they're agreeing to: [paste clause]."
+  ],
+  best:[
+    "Never discount without removing scope — protect the precedent for future deals",
+    "Get objections in writing so nothing is misremembered later",
+    "Set a decision deadline politely, to prevent deals from drifting indefinitely"
+  ],
+  mistakes:[
+    {x:"Caving on price at the first pushback", fix:"→ trains clients to always negotiate; hold value framing first"},
+    {x:"Letting silence after the proposal go unaddressed", fix:"→ follow up with new information, not just 'checking in'"},
+    {x:"Sending contracts without having a lawyer review the template once", fix:"→ AI drafts help clarity, but don't skip a one-time legal review of your base template"}
+  ],
+  output:"A signed contract, first invoice sent, and payment terms confirmed.",
+  efficiency:"Keep a short library of pre-written objection responses (price, timeline, scope, competitor) to adapt in seconds."
+},
+{
+  id:"handoff",
+  num:"05",
+  name:"Handoff",
+  time:"2–3 days",
+  title:"Onboarding & Delivery Handoff",
+  desc:"Convert the signed deal into a running engagement cleanly, so sales momentum turns into a good client experience from day one.",
+  objectives:[
+    "Get the client onboarded and set expectations for kickoff",
+    "Hand the deal context to whoever delivers the work (even if that's future-you)",
+    "Close the loop in the CRM/tracker so pipeline reporting stays accurate"
+  ],
+  tasks:[
+    "Send a welcome/onboarding packet with next steps and access requests",
+    "Compile a handoff brief: everything learned in discovery, proposal, and negotiation",
+    "Schedule the kickoff call and set the communication cadence",
+    "Update pipeline status and log the deal outcome and terms"
+  ],
+  tools:[
+    {name:"Claude / ChatGPT", tag:"summarization", why:"Compresses every call transcript, email, and proposal revision into a single one-page handoff brief for delivery."},
+    {name:"Notion AI / ClickUp AI", tag:"project setup", why:"Spins up the delivery workspace and initial task list directly from the scope-of-work document."},
+    {name:"Calendly + AI scheduling assistant", tag:"kickoff", why:"Removes the back-and-forth of finding a kickoff time across time zones."}
+  ],
+  alt:"Alternatives: Asana AI for task generation, Dubsado for full client-portal onboarding, a simple shared Google Drive folder for lean setups.",
+  prompts:[
+    "Summarize this full deal history (discovery notes, proposal, negotiation emails) into a one-page handoff brief for whoever delivers this project: [paste all context]. Include: client goals, agreed scope, key personalities/preferences, and any promises made during the sales process.",
+    "Draft a warm onboarding email confirming the signed agreement, next steps, what we need from the client before kickoff, and the kickoff call time."
+  ],
+  best:[
+    "Never let a promise made verbally during the close go unrecorded in the handoff brief",
+    "Set the first deliverable date in the onboarding email itself, not just verbally",
+    "Close the loop in your tracker the same day — stale pipelines cause bad forecasting"
+  ],
+  mistakes:[
+    {x:"Assuming delivery already knows what sales discussed", fix:"→ always write the handoff brief; memory and context decay fast"},
+    {x:"Skipping a proper kickoff call for 'small' projects", fix:"→ misalignment on small projects is just as costly proportionally"},
+    {x:"Leaving the deal open in the CRM after signature", fix:"→ update status immediately for accurate pipeline forecasting"}
+  ],
+  output:"An onboarded client, a delivery-ready handoff brief, and an accurately closed pipeline record.",
+  efficiency:"Template the handoff brief structure once — AI only needs to fill it in per deal, not invent the format each time."
+}
+];
+
+const DECISION_TREE = {
+  q:"Which pricing model should this proposal use?",
+  options:[
+    {arrow:"IF", lead:"scope is well-defined and one-off →", text:"Use fixed-price. Easiest for the client to approve quickly."},
+    {arrow:"IF", lead:"work is ongoing or scope may evolve →", text:"Use a monthly retainer. Protects your margin against scope creep."},
+    {arrow:"IF", lead:"project is large, multi-phase, or high-risk →", text:"Use milestone billing. Reduces client risk and improves your cash flow."}
+  ]
+};
+
+/* ================= STATE ================= */
+const state = JSON.parse(localStorage.getItem('dealLedgerState') || '{}');
+state.checks = state.checks || {};
+state.notes = state.notes || {};
+state.theme = state.theme || 'dark';
+
+function save(){ localStorage.setItem('dealLedgerState', JSON.stringify(state)); }
+
+/* ================= RENDER ================= */
+const railEl = document.getElementById('rail');
+const railFill = document.getElementById('railFill');
+const sideStages = document.getElementById('sideStages');
+const main = document.getElementById('main');
+
+function taskKey(stageId, i){ return stageId + '_task_' + i; }
+
+function allTaskCount(){
+  return STAGES.reduce((acc,s)=>acc+s.tasks.length,0);
+}
+function checkedCount(){
+  return Object.values(state.checks).filter(Boolean).length;
+}
+function updateProgress(){
+  const total = allTaskCount();
+  const done = checkedCount();
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progressPct').textContent = pct + '%';
+  railFill.style.width = pct + '%';
+
+  // stage-level completion for rail dots
+  STAGES.forEach((s)=>{
+    const stageDone = s.tasks.every((_,i)=>state.checks[taskKey(s.id,i)]);
+    const node = document.querySelector('.rail-node[data-id="'+s.id+'"]');
+    if(node){
+      node.classList.toggle('done', stageDone);
+    }
+  });
+}
+
+// Rail
+STAGES.forEach((s, idx)=>{
+  const btn = document.createElement('button');
+  btn.className = 'rail-node';
+  btn.dataset.id = s.id;
+  btn.innerHTML = `<span class="dot">${s.num}</span><span class="stage-name">${s.name}</span><span class="stage-time">${s.time}</span>`;
+  btn.addEventListener('click', ()=>document.getElementById('card-'+s.id).scrollIntoView({behavior:'smooth', block:'start'}));
+  railEl.appendChild(btn);
+
+  const li = document.createElement('li');
+  const sbtn = document.createElement('button');
+  sbtn.textContent = s.num + ' — ' + s.name;
+  sbtn.dataset.jump = s.id;
+  sbtn.addEventListener('click', ()=>document.getElementById('card-'+s.id).scrollIntoView({behavior:'smooth', block:'start'}));
+  li.appendChild(sbtn);
+  sideStages.appendChild(li);
+});
+
+function buildStageCard(s){
+  const wrap = document.createElement('section');
+  wrap.className = 'stage-card';
+  wrap.id = 'card-' + s.id;
+
+  const tasksHtml = s.tasks.map((t,i)=>{
+    const key = taskKey(s.id,i);
+    const checked = !!state.checks[key];
+    return `<li style="display:flex; gap:8px; align-items:flex-start;">
+      <button class="check-btn ${checked?'on':''}" data-key="${key}" style="flex-shrink:0; padding:0; width:16px; height:16px; border-radius:3px; justify-content:center;"><span class="box" style="margin:0;"></span></button>
+      <span style="flex:1;">${t}</span>
+    </li>`;
+  }).join('');
+
+  const objHtml = s.objectives.map(o=>`<li>${o}</li>`).join('');
+  const toolsHtml = s.tools.map(t=>`
+    <div class="tool-card">
+      <div class="tool-top"><span class="tool-name">${t.name}</span><span class="tool-tag">${t.tag}</span></div>
+      <div class="tool-why">${t.why}</div>
+    </div>`).join('');
+  const promptsHtml = s.prompts.map((p,i)=>`
+    <div class="prompt-box" data-prompt="${s.id}-${i}">${p}<button class="copy-btn" data-copy="${s.id}-${i}">copy</button></div>`).join('');
+  const bestHtml = s.best.map(b=>`<li>${b}</li>`).join('');
+  const mistakesHtml = s.mistakes.map(m=>`
+    <div class="mistake-row"><span class="x">✕</span><div><div>${m.x}</div><div class="fix">${m.fix}</div></div></div>`).join('');
+
+  wrap.innerHTML = `
+    <div class="stage-head">
+      <div class="stage-head-left">
+        <div class="stage-num">${s.num}</div>
+        <div>
+          <div class="stage-title">${s.title}</div>
+          <div class="stage-desc">${s.desc}</div>
+        </div>
+      </div>
+      <div class="stage-meta">
+        <span class="pill">⏱ ${s.time}</span>
+        <button class="icon-btn bookmark-btn" data-bookmark="${s.id}" title="Bookmark this stage">☆</button>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="grid2">
+        <div class="block">
+          <h5>Objectives</h5>
+          <ul>${objHtml}</ul>
+        </div>
+        <div class="block">
+          <h5>Tasks</h5>
+          <ul>${tasksHtml}</ul>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="block">
+          <h5>Best AI tools for this stage</h5>
+          <div class="tool-list">${toolsHtml}</div>
+          <div class="alt-tools"><b>Alternatives —</b> ${s.alt}</div>
+        </div>
+        <div class="block">
+          <h5>Prompt examples</h5>
+          ${promptsHtml}
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="block">
+          <h5>Best practices</h5>
+          <ul>${bestHtml}</ul>
+        </div>
+        <div class="block">
+          <h5>Common mistakes</h5>
+          ${mistakesHtml}
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="block">
+          <h5>Expected output</h5>
+          <ul><li>${s.output}</li></ul>
+        </div>
+        <div class="block">
+          <h5>Efficiency tip</h5>
+          <ul><li>${s.efficiency}</li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="stage-foot">
+      <div class="notes-area">
+        <span class="notes-label">Your notes for this stage</span>
+        <textarea placeholder="Add client-specific notes, reminders, or deviations from the plan..." data-notes="${s.id}">${state.notes[s.id]||''}</textarea>
+      </div>
+    </div>
+  `;
+  return wrap;
+}
+
+STAGES.forEach(s=> main.appendChild(buildStageCard(s)) );
+
+// Decision tree block, inserted after stage 03 (proposal)
+const dtreeSection = document.createElement('section');
+dtreeSection.className = 'section-block';
+dtreeSection.innerHTML = `
+  <h3>Decision tree — Choosing a pricing model</h3>
+  <div class="dtree">
+    <div class="q">${DECISION_TREE.q}</div>
+    ${DECISION_TREE.options.map(o=>`<div class="dtree-opt"><span class="arrow">${o.arrow}</span><div><span class="lead">${o.lead}</span> ${o.text}</div></div>`).join('')}
+  </div>
+`;
+document.getElementById('card-close').before(dtreeSection);
+
+/* ===== Closing sections ===== */
+function section(id, title, innerHtml){
+  const s = document.createElement('section');
+  s.className = 'section-block';
+  s.id = id;
+  s.innerHTML = `<h3>${title}</h3>${innerHtml}`;
+  main.appendChild(s);
+}
+
+section('summary','Workflow summary', `
+  <p style="font-size:13.5px; color:var(--text-dim); max-width:760px;">
+  This pipeline moves a service-business lead through five stages — capture, qualification, proposal, negotiation, and handoff —
+  typically closing in 14–21 days for mid-size engagements. AI is used throughout for research, drafting, and summarization,
+  while judgment calls (pricing, objection handling, scope decisions) stay with you. The biggest lever for win-rate is speed
+  in stage 01 and specificity in stage 03; the biggest lever for margin protection is discipline in stage 04.
+  </p>
+`);
+
+section('stack','Recommended AI stack', `
+  <div class="stack-grid">
+    <div class="stack-item"><div class="role">Research &amp; drafting</div><div class="tname">Claude / ChatGPT</div><div class="tdesc">Used in every stage for briefs, proposals, and objection responses.</div></div>
+    <div class="stack-item"><div class="role">Lead enrichment</div><div class="tname">Clay</div><div class="tdesc">Scores and enriches inbound leads automatically.</div></div>
+    <div class="stack-item"><div class="role">Call transcription</div><div class="tname">Fireflies.ai / Fathom</div><div class="tdesc">Records discovery calls and generates action items.</div></div>
+    <div class="stack-item"><div class="role">Proposal &amp; e-sign</div><div class="tname">PandaDoc</div><div class="tdesc">Proposal design, tracking, and contract signature in one tool.</div></div>
+    <div class="stack-item"><div class="role">Workspace / CRM</div><div class="tname">Notion AI</div><div class="tdesc">Pipeline tracker, qualification notes, and handoff briefs.</div></div>
+    <div class="stack-item"><div class="role">Invoicing</div><div class="tname">Stripe / QuickBooks</div><div class="tdesc">First invoice tied directly to contract signature.</div></div>
+  </div>
+`);
+
+section('learn','Learning resources', `
+  <div class="link-list">
+    <div><a href="https://www.predictablerevenue.com/blog" target="_blank" rel="noopener">Predictable Revenue Blog</a><div class="lmeta">Outbound and pipeline process frameworks for service businesses.</div></div>
+    <div><a href="https://www.consultingsuccess.com/blog" target="_blank" rel="noopener">Consulting Success Blog</a><div class="lmeta">Proposal, pricing, and positioning guidance specific to consultants and agencies.</div></div>
+    <div><a href="https://www.gong.io/labs/" target="_blank" rel="noopener">Gong Labs</a><div class="lmeta">Data-backed research on what actually works in sales calls and objection handling.</div></div>
+    <div><a href="https://www.anthropic.com/customers" target="_blank" rel="noopener">Anthropic Customer Stories</a><div class="lmeta">Real examples of Claude used in sales and business workflows.</div></div>
+  </div>
+`);
+
+section('community','Communities', `
+  <div class="tag-cloud">
+    <span class="tag">r/consulting</span>
+    <span class="tag">r/freelance</span>
+    <span class="tag">r/agency</span>
+    <span class="tag">Consulting Success Community</span>
+    <span class="tag">Agency Boss Facebook Group</span>
+    <span class="tag">Indie Hackers — Sales &amp; Marketing</span>
+    <span class="tag">SaaStr Community (for B2B-adjacent agencies)</span>
+  </div>
+`);
+
+section('keywords','Search keywords', `
+  <div class="tag-cloud">
+    <span class="tag">agency sales pipeline template</span>
+    <span class="tag">consulting proposal AI</span>
+    <span class="tag">discovery call qualification framework</span>
+    <span class="tag">freelance client onboarding checklist</span>
+    <span class="tag">objection handling scripts consulting</span>
+    <span class="tag">retainer vs fixed price pricing model</span>
+    <span class="tag">CRM for solo consultants</span>
+  </div>
+`);
+
+section('prompts','Additional AI prompts', `
+  <div class="prompt-box" data-prompt="extra-0">Write 3 subject-line options for a re-engagement email to a lead who went quiet after receiving a proposal 10 days ago.<button class="copy-btn" data-copy="extra-0">copy</button></div>
+  <div class="prompt-box" data-prompt="extra-1">Analyze my last 10 closed-lost deals (paste notes) and identify the most common reason deals fall through at each stage.<button class="copy-btn" data-copy="extra-1">copy</button></div>
+  <div class="prompt-box" data-prompt="extra-2">Draft a case study outline from this completed project: client, problem, approach, result. Use it as social proof in future proposals.<button class="copy-btn" data-copy="extra-2">copy</button></div>
+`);
+
+section('future','Future automation opportunities', `
+  <div class="future-list">
+    <div class="future-item"><span class="fnum">→</span><div><div class="ftitle">Auto-enrichment on form submit</div><div class="fdesc">Trigger Clay enrichment and lead scoring automatically the moment a form is submitted, before you even open your inbox.</div></div></div>
+    <div class="future-item"><span class="fnum">→</span><div><div class="ftitle">Transcript-to-brief pipeline</div><div class="fdesc">Wire Fireflies output directly into a Claude API call via Zapier/Make to auto-generate the qualification brief with zero manual copy-paste.</div></div></div>
+    <div class="future-item"><span class="fnum">→</span><div><div class="ftitle">Proposal-open alerts</div><div class="fdesc">Connect PandaDoc view-tracking to a Slack alert so you can follow up within the hour a client opens the proposal — the highest-intent moment.</div></div></div>
+    <div class="future-item"><span class="fnum">→</span><div><div class="ftitle">Auto-generated handoff briefs</div><div class="fdesc">On contract signature, auto-compile all stored notes into a handoff brief and post it to the delivery team's workspace automatically.</div></div></div>
+  </div>
+`);
+
+/* ================= INTERACTIONS ================= */
+main.addEventListener('click', (e)=>{
+  const cb = e.target.closest('.check-btn');
+  if(cb && cb.dataset.key){
+    state.checks[cb.dataset.key] = !state.checks[cb.dataset.key];
+    cb.classList.toggle('on', state.checks[cb.dataset.key]);
+    updateProgress();
+    save();
+    return;
+  }
+  const copyBtn = e.target.closest('.copy-btn');
+  if(copyBtn){
+    const box = copyBtn.closest('.prompt-box');
+    const text = box.textContent.replace('copy','').replace('copied','').trim();
+    navigator.clipboard.writeText(text).then(()=>{
+      copyBtn.textContent = 'copied';
+      copyBtn.classList.add('copied');
+      setTimeout(()=>{copyBtn.textContent='copy'; copyBtn.classList.remove('copied');}, 1400);
+    });
+    return;
+  }
+  const bm = e.target.closest('.bookmark-btn');
+  if(bm){
+    const id = bm.dataset.bookmark;
+    state.bookmarks = state.bookmarks || {};
+    state.bookmarks[id] = !state.bookmarks[id];
+    bm.textContent = state.bookmarks[id] ? '★' : '☆';
+    bm.classList.toggle('active', state.bookmarks[id]);
+    save();
+  }
+});
+
+main.addEventListener('input', (e)=>{
+  if(e.target.dataset.notes){
+    state.notes[e.target.dataset.notes] = e.target.value;
+    save();
+  }
+});
+
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  document.body.classList.toggle('light');
+  state.theme = document.body.classList.contains('light') ? 'light' : 'dark';
+  document.getElementById('themeToggle').textContent = state.theme==='light' ? '☀' : '☾';
+  save();
+});
+
+document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+
+document.getElementById('bookmarkToggle').addEventListener('click', ()=>{
+  const first = Object.keys(state.bookmarks||{}).find(k=>state.bookmarks[k]);
+  if(first){ document.getElementById('card-'+first).scrollIntoView({behavior:'smooth'}); }
+});
+
+/* Restore state */
+if(state.theme === 'light'){
+  document.body.classList.add('light');
+  document.getElementById('themeToggle').textContent = '☀';
+}
+if(state.bookmarks){
+  Object.keys(state.bookmarks).forEach(id=>{
+    if(state.bookmarks[id]){
+      const btn = document.querySelector('.bookmark-btn[data-bookmark="'+id+'"]');
+      if(btn){ btn.textContent='★'; btn.classList.add('active'); }
+    }
+  });
+}
+updateProgress();
+
+/* Rail current-stage highlight on scroll */
+const stageEls = STAGES.map(s=>document.getElementById('card-'+s.id));
+const railNodes = STAGES.map(s=>document.querySelector('.rail-node[data-id="'+s.id+'"]'));
+const sideBtns = Array.from(document.querySelectorAll('.side-list button[data-jump]'));
+
+function onScroll(){
+  let activeIdx = 0;
+  const scrollPos = window.scrollY + 260;
+  stageEls.forEach((el,i)=>{ if(el && el.offsetTop <= scrollPos) activeIdx = i; });
+  railNodes.forEach((n,i)=> n && n.classList.toggle('current', i===activeIdx));
+  sideBtns.forEach((b)=> b.classList.toggle('active', b.dataset.jump === STAGES[activeIdx].id));
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+</script>
+</body>
+</html>
