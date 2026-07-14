@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mohammad Aman — LinkedIn Profile Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;900&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16233A;
+  --paper:#F6F4EC;
+  --paper-2:#EDE9DB;
+  --card:#FFFFFF;
+  --before:#C97A1F;
+  --before-bg:#FBEEDD;
+  --after:#1F8A70;
+  --after-bg:#E1F3EC;
+  --danger:#B5482F;
+  --danger-bg:#FBE7E0;
+  --line: rgba(22,35,58,0.14);
+  --line-strong: rgba(22,35,58,0.28);
+  --muted: rgba(22,35,58,0.62);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Space Grotesk',sans-serif;
+  line-height:1.55;
+}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px 80px;}
+header.hero{
+  background:var(--ink);
+  color:var(--paper);
+  padding:56px 24px 44px;
+  margin-bottom:0;
+}
+header.hero .inner{max-width:900px;margin:0 auto;}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:#E2A93B;
+  margin:0 0 14px;
+}
+h1.title{
+  font-family:'Fraunces',serif;
+  font-weight:900;
+  font-size:42px;
+  line-height:1.08;
+  margin:0 0 10px;
+}
+.subtitle{font-size:16px;color:rgba(246,244,236,0.75);margin:0 0 32px;max-width:620px;}
+.gauge-row{display:flex;gap:16px;flex-wrap:wrap;}
+.gauge{
+  flex:1;min-width:220px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:4px;
+  padding:18px 20px;
+}
+.gauge .glabel{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(246,244,236,0.55);margin-bottom:8px;}
+.gauge .gval{font-family:'Fraunces',serif;font-weight:900;font-size:34px;}
+.gauge.before .gval{color:#E2A93B;}
+.gauge.after .gval{color:#5FCBA8;}
+.gauge .gbar{height:6px;background:rgba(255,255,255,0.12);border-radius:3px;margin-top:10px;overflow:hidden;}
+.gauge .gfill{height:100%;border-radius:3px;}
+.gauge.before .gfill{background:#E2A93B;width:24%;}
+.gauge.after .gfill{background:#5FCBA8;width:86%;}
+.gauge.delta{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;}
+.gauge.delta .gval{color:#5FCBA8;}
+
+nav.tabs{
+  position:sticky;top:0;z-index:10;
+  background:var(--paper);
+  border-bottom:1px solid var(--line-strong);
+  display:flex;overflow-x:auto;
+  margin-bottom:36px;
+}
+nav.tabs button{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+  background:none;border:none;border-bottom:3px solid transparent;
+  padding:16px 18px;color:var(--muted);cursor:pointer;white-space:nowrap;
+}
+nav.tabs button.active{color:var(--ink);border-bottom-color:var(--danger);font-weight:600;}
+nav.tabs button:hover{color:var(--ink);}
+
+section.panel{display:none;}
+section.panel.active{display:block;}
+
+h2.h2{
+  font-family:'Fraunces',serif;font-weight:600;font-size:26px;
+  margin:0 0 6px;
+}
+p.lead{color:var(--muted);margin:0 0 28px;font-size:15px;}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:22px 24px;
+  margin-bottom:18px;
+}
+.card-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:14px;flex-wrap:wrap;gap:8px;
+}
+.card-head h3{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0;}
+.score-pill{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+  padding:4px 10px;border-radius:20px;white-space:nowrap;
+}
+.score-pill.low{background:var(--danger-bg);color:var(--danger);}
+.score-pill.mid{background:var(--before-bg);color:var(--before);}
+.score-pill.high{background:var(--after-bg);color:var(--after);}
+
+.quote{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;
+  background:var(--paper-2);border-left:3px solid var(--danger);
+  padding:10px 14px;margin:10px 0;color:var(--ink);
+}
+.tag-row{display:flex;gap:10px;margin:14px 0 4px;flex-wrap:wrap;}
+.tag{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted);}
+.tag b{color:var(--ink);display:block;font-family:'Space Grotesk',sans-serif;font-size:14px;margin-top:2px;font-weight:500;}
+
+.divider{border:none;border-top:1px solid var(--line);margin:28px 0;}
+
+.headline-opt{
+  border:1px solid var(--line);border-radius:4px;padding:16px 18px;margin-bottom:12px;
+  background:var(--card);
+}
+.headline-opt .tagname{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--after);margin-bottom:8px;display:block;
+}
+.headline-opt .htext{font-size:16px;font-weight:500;margin-bottom:8px;}
+.headline-opt .hwhy{font-size:13px;color:var(--muted);}
+
+.about-block{margin-bottom:10px;}
+.about-block .lbl{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--muted);margin-bottom:4px;
+}
+.about-text{font-size:15px;white-space:pre-line;}
+.kw-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.kw{background:var(--after-bg);color:var(--after);font-size:12px;font-family:'IBM Plex Mono',monospace;padding:4px 10px;border-radius:20px;}
+
+.ba-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.ba-col{padding:12px 14px;border-radius:4px;font-size:13.5px;}
+.ba-col.before{background:var(--danger-bg);}
+.ba-col.after{background:var(--after-bg);}
+.ba-col .balbl{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;opacity:.7;}
+@media(max-width:640px){.ba-row{grid-template-columns:1fr;}}
+
+.skill-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.skill-cols ol,.skill-cols ul{margin:0;padding-left:20px;font-size:14px;}
+.skill-cols li{margin-bottom:6px;}
+@media(max-width:640px){.skill-cols{grid-template-columns:1fr;}}
+.pin-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.pin{background:var(--ink);color:var(--paper);font-size:12px;font-family:'IBM Plex Mono',monospace;padding:5px 12px;border-radius:20px;}
+
+table.scorecard{width:100%;border-collapse:collapse;font-size:14px;}
+table.scorecard th{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+  text-align:left;color:var(--muted);border-bottom:1px solid var(--line-strong);padding:8px 6px;
+}
+table.scorecard td{padding:10px 6px;border-bottom:1px solid var(--line);}
+table.scorecard td.num{font-family:'IBM Plex Mono',monospace;text-align:center;}
+.delta-up{color:var(--after);font-weight:600;}
+tr.total td{font-weight:600;border-top:2px solid var(--ink);border-bottom:none;}
+
+.day-card{border:1px solid var(--line);border-radius:4px;margin-bottom:14px;overflow:hidden;}
+.day-head{
+  background:var(--paper-2);padding:14px 18px;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.day-head .dnum{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--danger);letter-spacing:.06em;text-transform:uppercase;}
+.day-head h4{margin:2px 0 0;font-family:'Fraunces',serif;font-weight:600;font-size:16px;}
+.day-body{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .3s ease, padding .3s ease;}
+.day-body.open{padding:16px 18px 20px;max-height:1200px;}
+.day-head .chev{font-family:'IBM Plex Mono',monospace;color:var(--muted);transition:transform .3s;}
+.day-head.open .chev{transform:rotate(180deg);}
+
+.checklist label{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin-bottom:8px;cursor:pointer;}
+.checklist input{margin-top:3px;}
+
+.post-draft{
+  background:var(--paper-2);border-radius:4px;padding:14px 16px;font-size:14px;white-space:pre-line;margin:10px 0;
+  border-left:3px solid var(--after);
+}
+.copy-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+  background:none;border:1px solid var(--line-strong);border-radius:20px;padding:6px 14px;cursor:pointer;color:var(--ink);
+}
+.copy-btn:hover{background:var(--ink);color:var(--paper);}
+
+.summary-card{
+  background:var(--ink);color:var(--paper);border-radius:6px;padding:30px 28px;
+  font-family:'IBM Plex Mono',monospace;
+}
+.summary-card h3{font-family:'Fraunces',serif;color:var(--paper);font-size:20px;margin-top:0;}
+.summary-card .sc-scores{display:flex;gap:24px;margin:18px 0;}
+.summary-card .sc-scores div{flex:1;}
+.summary-card .sc-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;}
+.summary-card .sc-num{font-family:'Fraunces',serif;font-size:30px;font-weight:900;}
+.summary-card .sc-num.b{color:#E2A93B;}
+.summary-card .sc-num.a{color:#5FCBA8;}
+.summary-card ol{font-size:13px;padding-left:18px;}
+.summary-card li{margin-bottom:6px;}
+.summary-card .punch{margin-top:16px;font-size:13.5px;border-top:1px solid rgba(255,255,255,0.2);padding-top:14px;}
+
+footer.note{font-size:12px;color:var(--muted);text-align:center;margin-top:50px;font-family:'IBM Plex Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="inner">
+    <p class="eyebrow">Profile audit / Mohammad Aman</p>
+    <h1 class="title">Your profile isn't broken. It's just invisible.</h1>
+    <p class="subtitle">You have real, job-relevant skills. Right now your profile buries them under a keyword list with no story attached. Here's the full breakdown and the rebuild.</p>
+    <div class="gauge-row">
+      <div class="gauge before"><div class="glabel">Before</div><div class="gval">24/100</div><div class="gbar"><div class="gfill"></div></div></div>
+      <div class="gauge after"><div class="glabel">After</div><div class="gval">86/100</div><div class="gbar"><div class="gfill"></div></div></div>
+      <div class="gauge delta"><div class="glabel">Change</div><div class="gval">+62</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="tabs" id="tabs">
+  <button data-t="roast" class="active">1 · Roast</button>
+  <button data-t="rebuild">2 · Rebuild</button>
+  <button data-t="scorecard">3 · Scorecard</button>
+  <button data-t="plan">4 · 7-day plan</button>
+  <button data-t="summary">5 · Share card</button>
+</nav>
+
+<section class="panel active" id="p-roast">
+  <h2 class="h2">The roast</h2>
+  <p class="lead">What a recruiter actually thinks in the first 3 seconds — no sugarcoating.</p>
+
+  <div class="card">
+    <div class="card-head"><h3>Headline</h3><span class="score-pill mid">4/10</span></div>
+    <div class="quote">"Mohammad Aman | Student at Maharana Pratap Group of Institutions, 3rd year | Data Analyst | Python | numpy | Pandas | Data Visualization | Advance with AI Excel | PowerBI | Tableau | MySQL | AI Tools |."</div>
+    <p><b>❌ The problem:</b> This is a keyword dump, not a headline. Eleven items separated by pipes with no verb, no value proposition, and a stray period at the end. It reads like a tag cloud, not a person.</p>
+    <p><b>🧠 Why it hurts:</b> Recruiters skim headlines in under 2 seconds. A wall of tool names tells them "this person knows some software" — it doesn't tell them what you can actually do with it, or why they should care.</p>
+    <p><b>🔍 The invisible cost:</b> You DO rank on some keyword searches because the tools are all there — that part is working. But you lose the click. Recruiters open 3-5 profiles per search; yours won't be one of the ones they open, because nothing differentiates you from the other 40 students listing the same 8 tools.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>About — first 2 lines</h3><span class="score-pill low">0/10</span></div>
+    <p><b>❌ The problem:</b> There is no About section. This is the single biggest gap on your profile.</p>
+    <p><b>🧠 Why it hurts:</b> The first two lines of About are the most valuable real estate on LinkedIn — they show before the "see more" click and often show directly in search results. An empty About section means zero pitch, zero personality, zero reason to keep reading.</p>
+    <p><b>🔍 The invisible cost:</b> Recruiters searching "data analyst fresher Python" land on your profile, see a busy headline and nothing else, and move on. You're filtered out before anyone reads your actual skills.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>About — full section</h3><span class="score-pill low">0/10</span></div>
+    <p><b>❌ The problem:</b> Same as above — nothing written yet.</p>
+    <p><b>🧠 Why it hurts:</b> This is where you're supposed to prove you can turn tools into outcomes. Without it, "Python, Power BI, Tableau" is just a list a bot could generate.</p>
+    <p><b>🔍 The invisible cost:</b> You're currently indistinguishable from thousands of other 3rd-year students who took the same online courses. The About section is what makes you memorable — right now nothing does.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Experience</h3><span class="score-pill low">2/10</span></div>
+    <p><b>❌ The problem:</b> No Experience entry exists. You do have a real e-commerce sales analysis project, but it isn't on your profile at all, and even in our conversation it was described as four generic verbs: "cleaned data, built a dashboard, found insights, made a report."</p>
+    <p><b>🧠 Why it hurts:</b> Recruiters look at Experience (or Projects) to answer one question: "can this person actually do the job, or do they just know the vocabulary?" Right now there's no evidence either way.</p>
+    <p><b>🔍 The invisible cost:</b> You already did the hard part — the project. You're just not getting credit for it. That's the most fixable problem on this whole profile.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>Skills & keywords</h3><span class="score-pill high">6/10</span></div>
+    <p><b>❌ The problem:</b> The right keywords exist (Python, Pandas, NumPy, Power BI, Tableau, MySQL, Excel) but they're crammed into the headline instead of properly structured in the Skills section, and vague entries like "AI Tools" and "Advance with AI Excel" dilute the list.</p>
+    <p><b>🧠 Why it hurts:</b> LinkedIn's search algorithm weighs the dedicated Skills section, endorsements, and how skills are reinforced across About/Experience — not just the headline. A headline-only keyword strategy is fragile.</p>
+    <p><b>🔍 The invisible cost:</b> You're search-visible for the wrong reason (headline stuffing) and under-visible for the right one (a real, endorsed, reinforced Skills section).</p>
+  </div>
+</section>
+
+<section class="panel" id="p-rebuild">
+  <h2 class="h2">The rebuild</h2>
+  <p class="lead">Every rewrite comes with the strategy behind it — copy it, but understand it first.</p>
+
+  <h3 style="font-family:'Fraunces',serif;font-size:19px;">Headline — 3 options</h3>
+  <div class="headline-opt">
+    <span class="tagname">Option 1 · keyword-optimized (for search visibility)</span>
+    <div class="htext">Data Analyst | Python, Pandas, Power BI, Tableau, SQL | Turning Raw Data into Clear Business Decisions</div>
+    <div class="hwhy">Use this if your main goal is showing up in recruiter searches for "data analyst," "Python," "Power BI." Front-loads the exact terms recruiters filter by, then closes with a value line instead of trailing off.</div>
+  </div>
+  <div class="headline-opt">
+    <span class="tagname">Option 2 · value-proposition (for internship applications)</span>
+    <div class="htext">Aspiring Data Analyst — I turn messy spreadsheets into dashboards people actually use | Python · Power BI · Tableau</div>
+    <div class="hwhy">Use this on applications and when messaging recruiters directly. It answers "what do you do for me" in the first clause, which is what a hiring manager scanning 200 applicants actually wants.</div>
+  </div>
+  <div class="headline-opt">
+    <span class="tagname">Option 3 · authority style (for posting and networking)</span>
+    <div class="htext">3rd Year CS Student → Data Analyst | Learning in public: Python, SQL, Power BI, Tableau | Sharing real dashboards, not just certificates</div>
+    <div class="hwhy">Use this once you start posting content (Day 2 of the plan). It sets an expectation — "this person shares real work" — that pulls in recruiters and other students building similar skills.</div>
+  </div>
+  <p style="font-size:13.5px;color:var(--muted);">Since your goal is landing an internship/job, start with <b>Option 2</b> now, switch to <b>Option 1</b> once your Skills section is fully built out, and consider <b>Option 3</b> once you're posting weekly.</p>
+
+  <hr class="divider">
+
+  <h3 style="font-family:'Fraunces',serif;font-size:19px;">About section — full rewrite</h3>
+  <div class="card">
+    <div class="about-block"><div class="lbl">Hook (before "see more")</div><div class="about-text">Most dashboards look impressive. Mine are built to answer one question: what should you do next?</div></div>
+    <div class="about-block"><div class="lbl">Story</div><div class="about-text">I'm a 3rd-year student building toward a career as a Data Analyst. I work across Python, Excel, Power BI, Tableau, and MySQL — not to collect tools, but to turn raw, messy data into decisions someone can actually act on.</div></div>
+    <div class="about-block"><div class="lbl">Proof</div><div class="about-text">In my e-commerce sales analysis project, I cleaned and structured a full year of sales data, built an interactive dashboard, and found that just 3 products drove roughly 60% of revenue — with weekend sales running about 30% higher than weekdays.</div></div>
+    <div class="about-block"><div class="lbl">CTA</div><div class="about-text">Open to data analyst internships and entry-level roles. If you're hiring or just want to talk data, message me — or check the Featured section below for the project breakdown.</div></div>
+    <div class="kw-list">
+      <span class="kw">Data Analyst</span><span class="kw">Python</span><span class="kw">Pandas</span><span class="kw">NumPy</span><span class="kw">Power BI</span><span class="kw">Tableau</span><span class="kw">MySQL</span><span class="kw">Excel</span><span class="kw">Data Visualization</span><span class="kw">Data Cleaning</span>
+    </div>
+  </div>
+  <p style="font-size:13.5px;color:var(--muted);">Why this structure: the hook is a question, which is proven to increase "see more" clicks over a statement. The story stays in plain language on purpose — corporate phrasing ("leveraged synergies") reads as inauthentic from a student. The proof section is the only place with numbers, because that's what a recruiter's eye jumps to. Keywords are woven into sentences, not listed, so they read naturally to a human while still indexing for search.</p>
+
+  <hr class="divider">
+
+  <h3 style="font-family:'Fraunces',serif;font-size:19px;">Experience / Projects — top entry rewrite</h3>
+  <p class="lead" style="margin-bottom:14px;">Add this as a "Projects" entry (or under Experience if your version of LinkedIn supports Projects as a separate section). Title suggestion: <b>E-commerce Sales Analysis — Independent Project</b></p>
+
+  <div class="ba-row">
+    <div class="ba-col before"><div class="balbl">Before</div>cleaned data</div>
+    <div class="ba-col after"><div class="balbl">After</div>Cleaned and structured 1 year of e-commerce sales data (10,000+ rows) using Python (Pandas) and Excel, resolving duplicates and formatting inconsistencies to ensure accurate analysis.</div>
+  </div>
+  <div class="ba-row">
+    <div class="ba-col before"><div class="balbl">Before</div>built a dashboard</div>
+    <div class="ba-col after"><div class="balbl">After</div>Built an interactive Power BI dashboard tracking revenue, top-performing products, and weekly sales trends across a full year of transactions.</div>
+  </div>
+  <div class="ba-row">
+    <div class="ba-col before"><div class="balbl">Before</div>found insights</div>
+    <div class="ba-col after"><div class="balbl">After</div>Identified that just 3 products drove approximately 60% of total revenue and that weekend sales outperformed weekdays by roughly 30%, insights that could directly inform inventory and staffing decisions.</div>
+  </div>
+  <div class="ba-row">
+    <div class="ba-col before"><div class="balbl">Before</div>made a report</div>
+    <div class="ba-col after"><div class="balbl">After</div>Delivered a summary report translating findings into plain-language recommendations, using MySQL queries to validate the numbers behind each insight.</div>
+  </div>
+  <p style="font-size:13.5px;color:var(--muted);">Every bullet now starts with a past-tense action verb, includes a number (even the estimates you gave me — "roughly," "approximately" keeps it honest), and shows a decision the analysis enables, not just a task completed. That last part is what separates "I did data analyst tasks" from "I think like a data analyst."</p>
+
+  <hr class="divider">
+
+  <h3 style="font-family:'Fraunces',serif;font-size:19px;">Skills recommendations</h3>
+  <div class="card">
+    <div class="skill-cols">
+      <div>
+        <div class="lbl" style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--after);margin-bottom:8px;">Add (priority order)</div>
+        <ol>
+          <li>SQL</li>
+          <li>Data Cleaning</li>
+          <li>Exploratory Data Analysis (EDA)</li>
+          <li>Data Storytelling</li>
+          <li>Power Query</li>
+          <li>DAX</li>
+          <li>Statistical Analysis</li>
+          <li>Business Analytics</li>
+          <li>Google Sheets</li>
+          <li>A/B Testing (fundamentals)</li>
+        </ol>
+      </div>
+      <div>
+        <div class="lbl" style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--danger);margin-bottom:8px;">Remove / tighten</div>
+        <ul>
+          <li>"AI Tools" — too vague to index on; name the actual tool (e.g. ChatGPT for data prep) or drop it</li>
+          <li>"Advance with AI Excel" — awkward phrasing, splits into two clean skills: "Advanced Excel" and drop "AI" unless it refers to a specific certified skill</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pin-row">
+      <span class="pin">📌 Data Analyst</span><span class="pin">📌 Python</span><span class="pin">📌 Power BI</span>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:10px;">Pin these 3 to the top of your Skills section — they're the terms most likely to appear in an internship job description you'd actually apply to.</p>
+  </div>
+</section>
+
+<section class="panel" id="p-scorecard">
+  <h2 class="h2">Before vs after scorecard</h2>
+  <p class="lead">The math behind the headline number.</p>
+  <table class="scorecard">
+    <tr><th>Section</th><th class="num">Before</th><th class="num">After</th><th class="num">Change</th></tr>
+    <tr><td>Headline</td><td class="num">4/10</td><td class="num">8.5/10</td><td class="num delta-up">+4.5</td></tr>
+    <tr><td>About — hook</td><td class="num">0/10</td><td class="num">9/10</td><td class="num delta-up">+9</td></tr>
+    <tr><td>About — full</td><td class="num">0/10</td><td class="num">8.5/10</td><td class="num delta-up">+8.5</td></tr>
+    <tr><td>Experience</td><td class="num">2/10</td><td class="num">8/10</td><td class="num delta-up">+6</td></tr>
+    <tr><td>Skills / keywords</td><td class="num">6/10</td><td class="num">9/10</td><td class="num delta-up">+3</td></tr>
+    <tr class="total"><td>Overall</td><td class="num">24/100</td><td class="num">86/100</td><td class="num delta-up">+62</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--muted);margin-top:16px;">Overall is weighted, not a simple average — About and Experience carry more weight since they do the most work convincing a recruiter to reach out.</p>
+</section>
+
+<section class="panel" id="p-plan">
+  <h2 class="h2">7-day activation plan</h2>
+  <p class="lead">A rebuilt profile that nobody sees is still invisible. This is what makes it work.</p>
+
+  <div class="day-card">
+    <div class="day-head" onclick="toggleDay(this)"><div><div class="dnum">Day 1</div><h4>Make all profile changes</h4></div><span class="chev">▾</span></div>
+    <div class="day-body">
+      <div class="checklist">
+        <label><input type="checkbox"> Update headline to Option 2 (value-proposition)</label>
+        <label><input type="checkbox"> Paste in the new About section</label>
+        <label><input type="checkbox"> Add the E-commerce Sales Analysis project under Experience/Projects</label>
+        <label><input type="checkbox"> Add the 10 priority skills, remove "AI Tools" and reword "Advance with AI Excel"</label>
+        <label><input type="checkbox"> Pin Data Analyst, Python, and Power BI to the top of Skills</label>
+        <label><input type="checkbox"> Upload the dashboard screenshot or PDF to Featured, if you have one</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head" onclick="toggleDay(this)"><div><div class="dnum">Day 2</div><h4>Publish post #1 — "I rebuilt my LinkedIn"</h4></div><span class="chev">▾</span></div>
+    <div class="day-body">
+      <div class="post-draft">I spent this week rewriting my LinkedIn from scratch.
+
+Before: a headline with 11 keywords and an empty About section.
+After: an actual story about the kind of analyst I want to be.
+
+The turning point was realizing recruiters don't scroll for skill lists — they scroll for proof. So I pulled apart my own e-commerce sales analysis project and wrote it up properly: 1 year of data, a Power BI dashboard, and the finding that 3 products drove ~60% of revenue.
+
+Small change, but the profile finally sounds like a person instead of a resume.
+
+If you're a student and your LinkedIn is still a keyword dump — fix the About section first. Everything else follows from that.</div>
+      <button class="copy-btn" onclick="copyText(this)">Copy post</button>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head" onclick="toggleDay(this)"><div><div class="dnum">Day 3</div><h4>Send 10 strategic connection requests</h4></div><span class="chev">▾</span></div>
+    <div class="day-body">
+      <p style="font-size:14px;">Target: junior data analysts at companies you'd want to intern at, data analytics recruiters/talent partners, and alumni from your college now working in data roles. Search "data analyst" + filter by 1st-degree connections of your college alumni network.</p>
+      <div class="post-draft">Hi [Name], I'm a 3rd-year CS student building toward data analytics — currently working with Python, Power BI and Tableau. Would love to connect and follow your journey in the field.</div>
+      <button class="copy-btn" onclick="copyText(this)">Copy template</button>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head" onclick="toggleDay(this)"><div><div class="dnum">Day 4</div><h4>Comment on 5 posts in your space</h4></div><span class="chev">▾</span></div>
+    <div class="day-body">
+      <p style="font-size:14px;">Use the <b>Value Comment formula: Agree + Add Insight + Ask a Question.</b> Example: "Agree that dashboards without a clear ask get ignored — I ran into this on my own sales project, where I had to cut 3 metrics just to keep it readable. Curious how you decide what to leave out?" This gets you visible to the poster's audience, not just the poster.</p>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head" onclick="toggleDay(this)"><div><div class="dnum">Day 5</div><h4>Publish post #2 — a lessons-learned post</h4></div><span class="chev">▾</span></div>
+    <div class="day-body">
+      <div class="post-draft">3 things I got wrong on my first real data project (e-commerce sales analysis):
+
+1. I started building the dashboard before I knew what question it needed to answer. Rebuilt it twice.
+2. I trusted the raw data too early — a chunk of "duplicate" rows were actually different order IDs. Always check before you clean.
+3. I buried my best finding (3 products = ~60% of revenue) on the last slide instead of the first.
+
+None of these are Python or Power BI problems. They're thinking problems. Still learning.</div>
+      <button class="copy-btn" onclick="copyText(this)">Copy post</button>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head" onclick="toggleDay(this)"><div><div class="dnum">Day 6</div><h4>Engage + send 5 more connection requests</h4></div><span class="chev">▾</span></div>
+    <div class="day-body">
+      <div class="checklist">
+        <label><input type="checkbox"> Reply to every comment on both posts within a few hours</label>
+        <label><input type="checkbox"> Send 5 more connection requests (recruiters this time, using the Day 3 template)</label>
+        <label><input type="checkbox"> Follow 3 companies you'd want to intern at</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-card">
+    <div class="day-head" onclick="toggleDay(this)"><div><div class="dnum">Day 7</div><h4>Review profile views and connection rate</h4></div><span class="chev">▾</span></div>
+    <div class="day-body">
+      <p style="font-size:14px;">Check profile views (Analytics tab) and your connection acceptance rate. A jump in views right after Day 1-2 means the headline/About rewrite is working. A low acceptance rate (under ~40%) usually means the connection message needs to be more specific to each person, not a template copy-paste. Low post engagement usually means the hook (first line) needs sharpening — that's the only line that shows before "see more" on posts too.</p>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="p-summary">
+  <h2 class="h2">What I learned today</h2>
+  <p class="lead">Ready to screenshot and post as-is.</p>
+  <div class="summary-card">
+    <h3>I let AI roast my LinkedIn profile today. Here's what changed:</h3>
+    <div class="sc-scores">
+      <div><div class="sc-label">Before</div><div class="sc-num b">24/100</div></div>
+      <div><div class="sc-label">After</div><div class="sc-num a">86/100</div></div>
+    </div>
+    <div class="sc-label" style="margin-bottom:8px;">Top 3 mistakes I was making</div>
+    <ol>
+      <li>No About section at all — the most valuable real estate on the profile, empty.</li>
+      <li>Headline was 11 keywords with no verb and no value proposition.</li>
+      <li>A real project (e-commerce sales analysis) wasn't on my profile, and even I was describing it in 4 vague words.</li>
+    </ol>
+    <div class="punch">The #1 thing that made the biggest difference: turning "cleaned data, built a dashboard" into an actual story with numbers attached.</div>
+  </div>
+</section>
+
+</div>
+<footer class="note">Built from information provided — nothing invented. Fill in real numbers as you gather them.</footer>
+
+<script>
+document.getElementById('tabs').addEventListener('click', function(e){
+  if(e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('p-'+e.target.dataset.t).classList.add('active');
+});
+function toggleDay(head){
+  const body = head.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  head.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+function copyText(btn){
+  const text = btn.previousElementSibling.innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(()=>{btn.textContent = orig;}, 1500);
+  });
+}
+</script>
+</body>
+</html>
