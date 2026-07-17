@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Report — Self-Study vs Bootcamp</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-main: #0f0f14;
+  --bg-card: #1a1a24;
+  --bg-card-alt: #1e1e2e;
+  --text-primary: #f0f0f5;
+  --text-secondary: #8888a0;
+  --accent-green: #34d399;
+  --accent-red: #f87171;
+  --accent-blue: #60a5fa;
+  --accent-gold: #fbbf24;
+  --accent-purple: #a78bfa;
+  --border-subtle: rgba(255,255,255,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  padding: 40px 16px 20px;
+}
+.wrap { max-width: 720px; margin: 0 auto; }
+header.banner {
+  text-align: center;
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+}
+header.banner h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+header.banner .subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+header.banner .date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+header.banner .gradient-line {
+  height: 2px;
+  margin-top: 20px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-gold));
+  border-radius: 2px;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  border-left: 4px solid transparent;
+  transition: transform 0.2s ease;
+}
+.card:hover { transform: translateY(-2px); }
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+.body-text { font-size: 15px; line-height: 1.7; }
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Section accents */
+.s1 { border-left-color: var(--accent-blue); }
+.s1 .section-title { color: var(--accent-blue); }
+.s2 { border-left-color: var(--accent-green); }
+.s2 .section-title { color: var(--accent-green); }
+.s3 { border-left-color: var(--accent-purple); }
+.s3 .section-title { color: var(--accent-purple); }
+.s4 { border-left-color: var(--accent-blue); }
+.s4 .section-title { color: var(--accent-blue); }
+.s5 { border-left-color: var(--accent-red); }
+.s5 .section-title { color: var(--accent-red); }
+.s6 { border-left-color: var(--accent-green); }
+.s6 .section-title { color: var(--accent-green); }
+.s7 {
+  border-left-color: var(--accent-gold);
+  background: var(--bg-card-alt);
+  padding: 36px 28px;
+  box-shadow: 0 0 20px rgba(251,191,36,0.15), 0 4px 24px rgba(0,0,0,0.3);
+}
+.s7 .section-title { color: var(--accent-gold); }
+.s8 { border-left-color: var(--accent-gold); }
+.s8 .section-title { color: var(--accent-gold); }
+
+/* Option cards */
+.option-grid { display: flex; flex-direction: column; gap: 16px; }
+.option-card {
+  background: var(--bg-card-alt);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-subtle);
+}
+.option-card h3 { font-size: 17px; margin-bottom: 10px; }
+.option-card .row { margin-bottom: 10px; font-size: 14px; line-height: 1.6; }
+.option-card .row span.tag { color: var(--text-secondary); font-weight: 600; margin-right: 4px; }
+.opt-a h3 { color: var(--accent-blue); }
+.opt-b h3 { color: var(--accent-green); }
+
+/* Assumption buster */
+ul.buster-list { list-style: none; margin-top: 8px; }
+ul.buster-list li {
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 8px 0 8px 20px;
+  position: relative;
+  border-bottom: 1px solid var(--border-subtle);
+}
+ul.buster-list li:last-child { border-bottom: none; }
+ul.buster-list li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--accent-purple);
+}
+.bias-tag {
+  display: inline-block;
+  background: rgba(167,139,250,0.15);
+  color: var(--accent-purple);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+/* Matrix */
+.matrix-row { display: flex; align-items: center; margin-bottom: 14px; gap: 12px; }
+.matrix-label { width: 40%; font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+.bar-container {
+  width: 60%;
+  height: 28px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  width: 0%;
+  animation: growBar 0.8s ease-out forwards;
+}
+.bar-fill.a { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
+.bar-fill.b { background: linear-gradient(90deg, #34d399, #10b981); }
+@keyframes growBar { from { width: 0%; } to { width: var(--target); } }
+.matrix-total {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+.matrix-total .winner { color: var(--accent-gold); }
+
+/* Premortem */
+.premortem-block { margin-bottom: 20px; }
+.premortem-block h4 { font-size: 15px; margin-bottom: 8px; color: var(--text-primary); }
+.premortem-block ul { list-style: none; }
+.premortem-block li { font-size: 14px; line-height: 1.6; padding-left: 16px; position: relative; margin-bottom: 4px; }
+.premortem-block li::before { content: "•"; position: absolute; left: 0; color: var(--accent-red); }
+.warn { color: var(--accent-gold); font-weight: 600; }
+.prevent { color: var(--accent-green); font-weight: 600; }
+
+/* 7 day plan */
+.day-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: 14px; }
+.day-row:last-child { border-bottom: none; }
+.day-tag { min-width: 90px; font-weight: 700; color: var(--accent-green); font-size: 13px; }
+
+/* Verdict */
+.verdict-winner {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--accent-gold);
+  margin-bottom: 12px;
+}
+.verdict-body { font-size: 15px; line-height: 1.7; margin-bottom: 12px; }
+.hard-truth { font-style: italic; color: var(--text-secondary); font-size: 14px; }
+
+/* Shareable cards */
+.share-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+.mini-card {
+  flex: 1 1 200px;
+  background: var(--bg-card-alt);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 160px;
+}
+.mini-card h4 { font-size: 13px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: 0.5px; }
+.mini-card .mc-body { font-size: 14px; line-height: 1.5; flex-grow: 1; }
+.mini-card .watermark { font-size: 10px; color: var(--text-secondary); margin-top: 10px; opacity: 0.7; }
+.mini-score-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.mini-score-row .val { font-weight: 700; }
+
+footer {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-top: 40px;
+  padding-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .card { padding: 16px; }
+  .matrix-row { flex-direction: column; align-items: flex-start; }
+  .matrix-label, .bar-container { width: 100%; }
+  .bar-container { margin-top: 4px; }
+  .section-title { font-size: 18px; }
+  .verdict-winner { font-size: 24px; }
+  .share-grid { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="banner">
+    <h1>DECISION REPORT</h1>
+    <div class="subtitle">Self-Study vs. Bootcamp — Becoming a Data Analyst</div>
+    <div class="date">July 17, 2026</div>
+    <div class="gradient-line"></div>
+  </header>
+
+  <!-- SECTION 1 -->
+  <div class="card s1">
+    <div class="section-title">The Real Decision</div>
+    <p class="body-text">You've already picked self-study, with a 3-month roadmap and a daily practice plan. The real decision isn't self-study vs. bootcamp anymore — it's whether you can manage your time well enough to actually execute that roadmap. That's what makes this hard: the format was never the problem, follow-through is.</p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="card s2">
+    <div class="section-title">The Case For Each Option</div>
+    <div class="option-grid">
+      <div class="option-card opt-a">
+        <h3>Option A — Self-Study</h3>
+        <div class="row"><span class="tag">Strongest case:</span>You already have a 3-month roadmap and a daily practice habit forming — the structure exists, it just needs consistent execution.</div>
+        <div class="row"><span class="tag">Hidden upside:</span>Fixing your time management now, without a bootcamp forcing your schedule, builds a skill you'll need for the rest of your career — self-discipline.</div>
+        <div class="row"><span class="tag">Biggest weakness:</span>No external accountability. If time management stays weak, the roadmap can quietly stall with no one noticing.</div>
+        <div class="row"><span class="tag">Best if you value:</span> flexibility, cost savings, and building independent discipline.</div>
+      </div>
+      <div class="option-card opt-b">
+        <h3>Option B — Bootcamp</h3>
+        <div class="row"><span class="tag">Strongest case:</span>External structure — set schedules, deadlines, and cohorts — can compensate for weak time management by removing the need to self-pace.</div>
+        <div class="row"><span class="tag">Hidden upside:</span>Peer pressure and instructor check-ins can create the accountability that's currently missing.</div>
+        <div class="row"><span class="tag">Biggest weakness:</span>It doesn't fix the underlying time management problem — it just outsources the discipline. The habit still needs building eventually.</div>
+        <div class="row"><span class="tag">Best if you value:</span> external accountability and a fixed schedule over flexibility.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="card s3">
+    <div class="section-title">Assumption Buster</div>
+    <p class="label" style="margin-bottom:6px;">Assumptions you may be making</p>
+    <ul class="buster-list">
+      <li>That a bootcamp would automatically fix your time management — structure imposed from outside doesn't always transfer into self-discipline later.</li>
+      <li>That the format (self-study vs. bootcamp) is the actual lever, when your own answers point to focus/consistency as the real lever.</li>
+      <li>That 3 months and daily practice alone guarantee the outcome, without a system to track whether the daily practice is actually happening.</li>
+    </ul>
+    <p class="label" style="margin:16px 0 6px;">Biases at play</p>
+    <p class="body-text"><span class="bias-tag">Status Quo Bias</span><span class="bias-tag">Analysis Paralysis</span>You're evaluating a path change (bootcamp) as a fix for a problem (time management) that switching paths won't necessarily solve — a way of avoiding the harder, less glamorous fix.</p>
+    <p class="label" style="margin:16px 0 6px;">What you're definitely ignoring</p>
+    <p class="body-text">You haven't mentioned any concrete system — calendar blocks, trackers, accountability partner — for enforcing daily practice. Without one, either path fails the same way.</p>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="card s4">
+    <div class="section-title">Decision Matrix</div>
+    <div id="matrix"></div>
+    <div class="matrix-total">
+      <span>Self-Study Total</span><span class="winner" id="totalA">— / 70</span>
+    </div>
+    <div class="matrix-total">
+      <span>Bootcamp Total</span><span id="totalB">— / 70</span>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="card s5">
+    <div class="section-title">Premortem</div>
+    <div class="premortem-block">
+      <h4 style="color:var(--accent-blue);">Self-Study — failed after 12 months</h4>
+      <ul>
+        <li>Daily practice sessions got skipped repeatedly with no system to catch it</li>
+        <li>No external deadline meant the 3-month roadmap quietly stretched indefinitely</li>
+        <li>Motivation dropped without anyone checking progress</li>
+      </ul>
+      <p style="margin-top:8px;"><span class="warn">Early warning sign:</span> <span class="body-text">missing 3+ practice days in a single week without rescheduling them.</span></p>
+      <p><span class="prevent">Prevention action:</span> <span class="body-text">set a fixed daily time block and track it visibly (habit tracker or calendar).</span></p>
+    </div>
+    <div class="premortem-block">
+      <h4 style="color:var(--accent-green);">Bootcamp — failed after 12 months</h4>
+      <ul>
+        <li>Fixed schedule clashed with existing commitments and got deprioritized anyway</li>
+        <li>Passive attendance without applying skills through personal practice</li>
+        <li>Cost pressure added stress that hurt focus rather than helping it</li>
+      </ul>
+      <p style="margin-top:8px;"><span class="warn">Early warning sign:</span> <span class="body-text">attending sessions but not completing take-home exercises.</span></p>
+      <p><span class="prevent">Prevention action:</span> <span class="body-text">pair bootcamp sessions with a personal accountability check-in weekly.</span></p>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="card s6">
+    <div class="section-title">7-Day Test Plan</div>
+    <div class="day-row"><div class="day-tag">Day 1-2</div><div>Audit where your time actually goes right now (track hours for 2 days) and identify your biggest daily time leak.</div></div>
+    <div class="day-row"><div class="day-tag">Day 3-4</div><div>Run one small experiment: block a fixed 45-60 min daily slot for your roadmap and protect it like an appointment.</div></div>
+    <div class="day-row"><div class="day-tag">Day 5-6</div><div>Have one conversation — tell a friend, mentor, or community your daily practice goal so someone can check in on you.</div></div>
+    <div class="day-row"><div class="day-tag">Day 7</div><div>Decision day: if you hit 5+/7 scheduled practice sessions, stick with self-study; if you hit 2 or fewer, seriously consider a bootcamp for forced structure.</div></div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="card s7">
+    <div class="section-title">The Verdict</div>
+    <div class="verdict-winner">Self-Study</div>
+    <p class="verdict-body">You already have the roadmap and a daily practice habit forming — the missing piece is a time management system, not a new format. Switching to a bootcamp treats the symptom, not the cause.</p>
+    <p class="body-text"><strong>What could flip it:</strong> if the 7-day test shows you consistently miss practice sessions even with a fixed time block and an accountability check-in, that's real evidence self-study isn't enough — and a bootcamp's forced structure becomes the more honest choice.</p>
+    <p class="hard-truth" style="margin-top:12px;">A bootcamp won't fix a habit problem you haven't tried to fix yourself first.</p>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="card s8">
+    <div class="section-title">Shareable Cards</div>
+    <div class="share-grid">
+      <div class="mini-card">
+        <h4>Matrix Summary</h4>
+        <div class="mc-body">
+          <div class="mini-score-row"><span>Self-Study</span><span class="val" style="color:var(--accent-blue);" id="miniA">—/70</span></div>
+          <div class="mini-score-row"><span>Bootcamp</span><span class="val" style="color:var(--accent-green);" id="miniB">—/70</span></div>
+        </div>
+        <div class="watermark">Built with Claude AI</div>
+      </div>
+      <div class="mini-card">
+        <h4>Verdict</h4>
+        <div class="mc-body">
+          <strong style="color:var(--accent-gold); font-size:16px;">Self-Study wins.</strong><br><br>
+          The roadmap already exists — fix the habit, not the format.
+        </div>
+        <div class="watermark">Built with Claude AI</div>
+      </div>
+      <div class="mini-card">
+        <h4>Share This</h4>
+        <div class="mc-body">
+          "I almost switched paths to fix a problem that was never about the path."<br><br>
+          Struggling with follow-through, not format? Run your own 7-day test before you switch anything.
+        </div>
+        <div class="watermark">Built with Claude AI</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Built with Claude AI | ABTalks 60-Day Challenge</footer>
+</div>
+
+<script>
+const dims = [
+  { label: "Life/Career Upside", a: 7, b: 7 },
+  { label: "Financial Safety", a: 9, b: 4 },
+  { label: "Growth & Learning", a: 7, b: 8 },
+  { label: "Stress Level (10=low)", a: 6, b: 5 },
+  { label: "Reversibility (10=easy)", a: 8, b: 6 },
+  { label: "Long-term Alignment", a: 8, b: 6 },
+  { label: "Regret Risk (10=low)", a: 6, b: 6 },
+];
+
+const matrixEl = document.getElementById('matrix');
+let delay = 0;
+dims.forEach(d => {
+  const row = document.createElement('div');
+  row.innerHTML = `
+    <div class="matrix-row">
+      <div class="matrix-label">${d.label}</div>
+      <div class="bar-container">
+        <div class="bar-fill a" style="--target:${d.a*10}%; animation-delay:${delay}s;">${d.a}</div>
+      </div>
+    </div>
+    <div class="matrix-row" style="margin-top:-8px;">
+      <div class="matrix-label"></div>
+      <div class="bar-container">
+        <div class="bar-fill b" style="--target:${d.b*10}%; animation-delay:${delay+0.05}s;">${d.b}</div>
+      </div>
+    </div>
+  `;
+  matrixEl.appendChild(row);
+  delay += 0.1;
+});
+
+const totalA = dims.reduce((s,d) => s + d.a, 0);
+const totalB = dims.reduce((s,d) => s + d.b, 0);
+document.getElementById('totalA').textContent = totalA + ' / 70' + (totalA >= totalB ? ' 🏆' : '');
+document.getElementById('totalB').textContent = totalB + ' / 70' + (totalB > totalA ? ' 🏆' : '');
+document.getElementById('miniA').textContent = totalA + '/70';
+document.getElementById('miniB').textContent = totalB + '/70';
+</script>
+</body>
+</html>
