@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal AI Playbook — Study &amp; Exam Prep with Claude</title>
+<style>
+:root{
+  --ink:#12151c;
+  --ink-2:#1b1f29;
+  --ink-3:#252b38;
+  --paper:#f7f5ef;
+  --paper-2:#efece3;
+  --chalk:#5eead4;
+  --chalk-dim:#2f6e63;
+  --amber:#f5a623;
+  --amber-dim:#8a5c14;
+  --line:#333a4a;
+  --line-light:#ddd7c8;
+  --ok:#7cd992;
+  --danger:#ef6f6f;
+  --text-hi:#f4f2ea;
+  --text-mid:#b9bcc7;
+  --text-lo:#7d818e;
+  --radius:10px;
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:'JetBrains Mono', 'Courier New', monospace;
+}
+[data-theme="light"]{
+  --bg:var(--paper);
+  --bg-2:var(--paper-2);
+  --bg-3:#e5e1d3;
+  --fg:#1b1c1e;
+  --fg-mid:#54544f;
+  --fg-lo:#8a887d;
+  --border:var(--line-light);
+  --card-bg:#ffffff;
+  --accent:var(--chalk-dim);
+  --accent-2:#c97a12;
+}
+[data-theme="dark"]{
+  --bg:var(--ink);
+  --bg-2:var(--ink-2);
+  --bg-3:var(--ink-3);
+  --fg:var(--text-hi);
+  --fg-mid:var(--text-mid);
+  --fg-lo:var(--text-lo);
+  --border:var(--line);
+  --card-bg:var(--ink-2);
+  --accent:var(--chalk);
+  --accent-2:var(--amber);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--font-body);
+  transition:background .3s ease,color .3s ease;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; margin:0; letter-spacing:-0.01em;}
+p{margin:0;}
+button{font-family:var(--font-body); cursor:pointer;}
+input,textarea,select{font-family:var(--font-body);}
+::selection{background:var(--accent); color:var(--ink);}
+
+/* ---------- Layout shell ---------- */
+.app{display:flex; min-height:100vh;}
+.sidebar{
+  width:240px; flex-shrink:0; background:var(--bg-2); border-right:1px solid var(--border);
+  padding:20px 14px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.brand{display:flex; align-items:center; gap:10px; padding:6px 8px 18px; border-bottom:1px solid var(--border); margin-bottom:14px;}
+.brand-mark{
+  width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; overflow:hidden;
+}
+.brand-mark::before{content:"◆"; color:var(--ink); font-size:15px; font-weight:900;}
+.brand-text{display:flex; flex-direction:column; line-height:1.15;}
+.brand-text b{font-family:var(--font-display); font-size:15px;}
+.brand-text span{font-size:11px; color:var(--fg-lo);}
+
+.nav-item{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; color:var(--fg-mid);
+  font-size:14px; font-weight:500; cursor:pointer; border:1px solid transparent; transition:background .15s, color .15s;
+  background:none; text-align:left; width:100%;
+}
+.nav-item:hover{background:var(--bg-3); color:var(--fg);}
+.nav-item.active{background:var(--bg-3); color:var(--fg); border-color:var(--border);}
+.nav-item .ico{width:18px; text-align:center; opacity:.85; flex-shrink:0;}
+.nav-section-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--fg-lo); margin:16px 8px 6px;}
+
+.sidebar-foot{margin-top:auto; padding-top:14px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px;}
+.sidebar-btn{
+  display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--fg-mid); background:none; border:1px solid var(--border);
+  border-radius:8px; padding:8px 10px; transition:all .15s;
+}
+.sidebar-btn:hover{color:var(--fg); border-color:var(--accent);}
+
+.main{flex:1; min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; padding:16px 28px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:var(--bg); z-index:20;
+}
+.topbar h1{font-size:21px;}
+.topbar-sub{font-size:12.5px; color:var(--fg-lo); margin-top:2px; font-family:var(--font-body);}
+.topbar-actions{display:flex; gap:8px; align-items:center;}
+.icon-btn{
+  width:36px; height:36px; border-radius:8px; border:1px solid var(--border); background:var(--bg-2); color:var(--fg-mid);
+  display:flex; align-items:center; justify-content:center; font-size:15px; transition:all .15s;
+}
+.icon-btn:hover{color:var(--fg); border-color:var(--accent);}
+
+.content{padding:26px 28px 60px; max-width:1180px; width:100%; margin:0 auto;}
+
+/* ---------- Explainer banner ---------- */
+.explainer{
+  background:linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--card-bg)), var(--card-bg));
+  border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin-bottom:22px;
+  display:flex; gap:16px; align-items:flex-start; position:relative;
+}
+.explainer .glyph{font-size:22px; flex-shrink:0; margin-top:2px;}
+.explainer h3{font-size:15px; margin-bottom:6px;}
+.explainer p{font-size:13.5px; color:var(--fg-mid); line-height:1.55;}
+.explainer .close-x{
+  position:absolute; top:12px; right:12px; background:none; border:none; color:var(--fg-lo); font-size:16px; padding:4px 8px; border-radius:6px;
+}
+.explainer .close-x:hover{color:var(--fg); background:var(--bg-3);}
+.explainer-list{margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;}
+.explainer-list span{
+  font-size:11.5px; background:var(--bg-3); border:1px solid var(--border); padding:3px 9px; border-radius:20px; color:var(--fg-mid);
+}
+
+/* ---------- Section header ---------- */
+.section-head{margin-bottom:18px;}
+.section-head h2{font-size:24px; margin-bottom:4px;}
+.section-head .sub{font-size:13.5px; color:var(--fg-lo);}
+
+/* ---------- Cards / grid ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:14px;}
+.card{
+  background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius); padding:16px;
+  display:flex; flex-direction:column; gap:10px; transition:transform .15s, border-color .15s;
+}
+.card:hover{border-color:var(--accent);}
+.card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+.card-title{font-family:var(--font-display); font-size:16px; font-weight:600;}
+.card-cat{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); font-weight:700;}
+.card-desc{font-size:12.5px; color:var(--fg-mid); line-height:1.5; flex:1;}
+.card-tags{display:flex; flex-wrap:wrap; gap:6px;}
+.tag{font-size:10.5px; background:var(--bg-3); border-radius:20px; padding:2px 8px; color:var(--fg-mid);}
+.card-actions{display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;}
+.btn{
+  border:1px solid var(--border); background:var(--bg-2); color:var(--fg); font-size:12px; padding:7px 11px; border-radius:7px;
+  font-weight:600; transition:all .15s; display:inline-flex; align-items:center; gap:6px;
+}
+.btn:hover{border-color:var(--accent); color:var(--accent);}
+.btn.primary{background:var(--accent); color:var(--ink); border-color:var(--accent);}
+.btn.primary:hover{filter:brightness(1.08); color:var(--ink);}
+.btn.ghost{background:none;}
+.btn.small{padding:5px 9px; font-size:11px;}
+.star-btn{background:none; border:none; font-size:16px; color:var(--fg-lo); padding:2px;}
+.star-btn.active{color:var(--amber);}
+
+/* ---------- Toolbar (search/filter) ---------- */
+.toolbar{display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; align-items:center;}
+.search-box{
+  flex:1; min-width:200px; display:flex; align-items:center; gap:8px; background:var(--bg-2); border:1px solid var(--border);
+  border-radius:8px; padding:9px 12px;
+}
+.search-box input{background:none; border:none; outline:none; color:var(--fg); font-size:13.5px; width:100%;}
+.search-box input::placeholder{color:var(--fg-lo);}
+select.filter-select{
+  background:var(--bg-2); border:1px solid var(--border); color:var(--fg); font-size:13px; padding:9px 10px; border-radius:8px; outline:none;
+}
+.chip-row{display:flex; gap:6px; flex-wrap:wrap;}
+.chip{
+  font-size:12px; padding:7px 12px; border-radius:20px; border:1px solid var(--border); background:var(--bg-2); color:var(--fg-mid); font-weight:600;
+}
+.chip.active{background:var(--accent); color:var(--ink); border-color:var(--accent);}
+
+/* ---------- Empty state ---------- */
+.empty{
+  text-align:center; padding:50px 20px; color:var(--fg-lo); border:1px dashed var(--border); border-radius:var(--radius);
+}
+.empty .glyph{font-size:30px; margin-bottom:10px;}
+.empty h4{color:var(--fg-mid); font-size:15px; margin-bottom:6px;}
+.empty p{font-size:13px;}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--card-bg); border:1px solid var(--border); border-radius:14px; max-width:640px; width:100%; max-height:88vh; overflow-y:auto;
+  padding:24px; position:relative; animation:modalIn .18s ease;
+}
+.modal.wide{max-width:900px;}
+@keyframes modalIn{from{opacity:0; transform:translateY(8px) scale(.98);} to{opacity:1; transform:none;}}
+.modal-close{position:absolute; top:16px; right:16px; background:var(--bg-2); border:1px solid var(--border); border-radius:8px; width:30px; height:30px; color:var(--fg-mid);}
+.modal-close:hover{color:var(--fg);}
+.modal h3{font-size:19px; margin-bottom:6px; padding-right:30px;}
+.modal .modal-sub{font-size:13px; color:var(--fg-lo); margin-bottom:18px;}
+
+/* ---------- Template detail ---------- */
+.var-row{display:flex; flex-direction:column; gap:4px; margin-bottom:12px;}
+.var-row label{font-size:12px; font-weight:700; color:var(--fg-mid); display:flex; align-items:center; gap:6px;}
+.var-row .hint{font-size:11px; color:var(--fg-lo); font-weight:400;}
+.var-row input, .var-row select, .var-row textarea{
+  background:var(--bg-2); border:1px solid var(--border); border-radius:7px; padding:9px 10px; color:var(--fg); font-size:13px; outline:none;
+}
+.var-row input:focus, .var-row select:focus, .var-row textarea:focus{border-color:var(--accent);}
+.var-row textarea{resize:vertical; min-height:60px; font-family:var(--font-body);}
+
+.preview-box{
+  background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:16px; font-family:var(--font-mono); font-size:12.5px;
+  line-height:1.65; white-space:pre-wrap; color:var(--fg); max-height:340px; overflow-y:auto; margin-top:6px;
+}
+.preview-box mark{background:transparent; color:var(--accent); font-weight:700;}
+
+.best-practices{background:var(--bg-2); border-radius:8px; padding:12px 14px; margin-top:14px;}
+.best-practices h4{font-size:12.5px; margin-bottom:6px; color:var(--fg-mid);}
+.best-practices ul{margin:0; padding-left:18px; font-size:12px; color:var(--fg-mid); line-height:1.7;}
+
+/* ---------- Prompt Builder / Loop Builder ---------- */
+.builder-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+@media (max-width:920px){.builder-grid{grid-template-columns:1fr;}}
+.builder-col h3{font-size:14px; margin-bottom:10px; color:var(--fg-mid); text-transform:uppercase; letter-spacing:.05em; font-size:11.5px;}
+.block-list{display:flex; flex-direction:column; gap:8px;}
+.block-picker-item{
+  border:1px solid var(--border); background:var(--card-bg); border-radius:9px; padding:11px 12px; cursor:pointer; transition:all .15s;
+}
+.block-picker-item:hover{border-color:var(--accent);}
+.block-picker-item .bp-head{display:flex; justify-content:space-between; align-items:center;}
+.block-picker-item .bp-title{font-size:13px; font-weight:700;}
+.block-picker-item .bp-desc{font-size:11.5px; color:var(--fg-lo); margin-top:4px; line-height:1.5;}
+.add-plus{width:22px; height:22px; border-radius:6px; background:var(--bg-3); display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--accent); flex-shrink:0;}
+
+.assembled-block{
+  border:1px solid var(--border); border-left:3px solid var(--accent); background:var(--card-bg); border-radius:9px; padding:12px; margin-bottom:10px;
+}
+.assembled-block .ab-head{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+.assembled-block .ab-title{font-size:13px; font-weight:700;}
+.assembled-block .ab-desc{font-size:11px; color:var(--fg-lo); margin-top:2px; line-height:1.5;}
+.assembled-block select, .assembled-block textarea, .assembled-block input{
+  width:100%; margin-top:8px; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; padding:8px; color:var(--fg); font-size:12.5px; outline:none;
+}
+.assembled-block textarea{min-height:54px; resize:vertical;}
+.remove-x{background:none; border:none; color:var(--fg-lo); font-size:15px; padding:2px 4px;}
+.remove-x:hover{color:var(--danger);}
+
+.builder-preview-panel{position:sticky; top:78px;}
+
+.copy-toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--fg); color:var(--bg);
+  padding:10px 18px; border-radius:30px; font-size:13px; font-weight:600; opacity:0; pointer-events:none; transition:all .25s; z-index:200;
+  display:flex; align-items:center; gap:8px;
+}
+.copy-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+/* ---------- Onboarding ---------- */
+.onboard-overlay{position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:150; display:flex; align-items:center; justify-content:center; padding:20px;}
+.onboard-card{background:var(--card-bg); border:1px solid var(--border); border-radius:16px; max-width:560px; width:100%; padding:32px; text-align:left;}
+.onboard-card h2{font-size:24px; margin-bottom:10px;}
+.onboard-card p{font-size:14px; color:var(--fg-mid); line-height:1.6; margin-bottom:16px;}
+.onboard-steps{display:flex; flex-direction:column; gap:10px; margin-bottom:22px;}
+.onboard-step{display:flex; gap:12px; align-items:flex-start; font-size:13px; color:var(--fg-mid);}
+.onboard-step .num{width:24px; height:24px; border-radius:50%; background:var(--bg-3); color:var(--accent); font-weight:700; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+
+/* ---------- Keyboard shortcuts modal ---------- */
+.kbd{background:var(--bg-3); border:1px solid var(--border); border-radius:5px; padding:2px 7px; font-family:var(--font-mono); font-size:11.5px;}
+.kbd-row{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;}
+.kbd-row:last-child{border-bottom:none;}
+
+/* ---------- Misc ---------- */
+.hidden{display:none !important;}
+.flex-between{display:flex; justify-content:space-between; align-items:center;}
+.mt{margin-top:16px;}
+.badge-new{background:var(--accent); color:var(--ink); font-size:9.5px; font-weight:800; padding:1px 6px; border-radius:6px; vertical-align:middle; margin-left:6px;}
+.footnote{font-size:11.5px; color:var(--fg-lo); margin-top:20px; text-align:center;}
+textarea.mine, input.mine{width:100%; box-sizing:border-box;}
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+@media (max-width:600px){.two-col{grid-template-columns:1fr;} .app{flex-direction:column;} .sidebar{width:100%; height:auto; position:relative;} .builder-preview-panel{position:static;}}
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="app">
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <b>AI Playbook</b>
+        <span>Study &amp; exam prep, STEM</span>
+      </div>
+    </div>
+
+    <button class="nav-item active" data-view="dashboard"><span class="ico">▦</span>Dashboard</button>
+    <button class="nav-item" data-view="workflows"><span class="ico">▤</span>My Workflows</button>
+    <button class="nav-item" data-view="library"><span class="ico">▥</span>Building Blocks</button>
+
+    <div class="nav-section-label">Create</div>
+    <button class="nav-item" data-view="promptbuilder"><span class="ico">✎</span>Prompt Builder</button>
+    <button class="nav-item" data-view="loopbuilder"><span class="ico">⟲</span>Loop Builder</button>
+
+    <div class="nav-section-label">Learn</div>
+    <button class="nav-item" data-view="guide"><span class="ico">◐</span>How This Works</button>
+
+    <div class="sidebar-foot">
+      <button class="sidebar-btn" id="themeToggle">🌙 <span>Toggle dark / light</span></button>
+      <button class="sidebar-btn" id="exportBtn">⇩ <span>Export my data</span></button>
+      <button class="sidebar-btn" id="importBtn">⇧ <span>Import data</span></button>
+      <button class="sidebar-btn" id="shortcutsBtn">⌘ <span>Keyboard shortcuts</span></button>
+      <input type="file" id="importFile" accept="application/json" class="hidden">
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <div class="topbar-sub" id="pageSub">Your saved AI study workflows, at a glance</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="helpBtn" title="What is this?">?</button>
+      </div>
+    </div>
+
+    <div class="content" id="content"><!-- views injected here --></div>
+  </div>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+<div class="modal-overlay" id="templateModalOverlay">
+  <div class="modal wide" id="templateModal"></div>
+</div>
+
+<div class="modal-overlay" id="helpModalOverlay">
+  <div class="modal">
+    <button class="modal-close" data-close="helpModalOverlay">✕</button>
+    <h3>What is this?</h3>
+    <p class="modal-sub">A quick orientation, available any time.</p>
+    <div style="font-size:13.5px; color:var(--fg-mid); line-height:1.7;">
+      <p><b style="color:var(--fg);">Personal AI Playbook</b> is a personal toolkit of reusable prompt templates ("workflows") built specifically for how you study — practice questions, self-testing, and structured notes in STEM subjects, using Claude.</p>
+      <p class="mt">Instead of hunting for a good prompt every time, you keep a library of tested, editable templates, and two builders to make new ones:</p>
+      <ul style="margin:10px 0 0; padding-left:18px;">
+        <li><b>My Workflows</b> — your saved, ready-to-use prompt templates, grouped by what they help you do.</li>
+        <li><b>Building Blocks</b> — the underlying pieces (role, objective, format, etc.) that any prompt is made of.</li>
+        <li><b>Prompt Builder</b> — assemble a new one-shot prompt from blocks, with a live preview.</li>
+        <li><b>Loop Builder</b> — turn a prompt into a self-checking, repeating routine (e.g. "keep quizzing me until I get 8/10 right").</li>
+      </ul>
+      <p class="mt">Everything is saved in your browser's local storage — nothing leaves this file. Use <b>Export</b> to back up or move your data.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="shortcutsModalOverlay">
+  <div class="modal">
+    <button class="modal-close" data-close="shortcutsModalOverlay">✕</button>
+    <h3>Keyboard shortcuts</h3>
+    <div class="kbd-row"><span>Focus search</span><span class="kbd">/</span></div>
+    <div class="kbd-row"><span>Go to Dashboard</span><span class="kbd">G</span> then <span class="kbd">D</span></div>
+    <div class="kbd-row"><span>Go to Prompt Builder</span><span class="kbd">G</span> then <span class="kbd">P</span></div>
+    <div class="kbd-row"><span>Go to Loop Builder</span><span class="kbd">G</span> then <span class="kbd">L</span></div>
+    <div class="kbd-row"><span>Toggle dark / light</span><span class="kbd">T</span></div>
+    <div class="kbd-row"><span>Close any modal</span><span class="kbd">Esc</span></div>
+    <div class="kbd-row"><span>Show this list</span><span class="kbd">?</span></div>
+  </div>
+</div>
+
+<div class="onboard-overlay hidden" id="onboardOverlay">
+  <div class="onboard-card">
+    <h2>Welcome to your AI Playbook</h2>
+    <p>Built from your interview: you're a STEM student using Claude who wants sharper study sessions — mainly practice questions, self-testing, and notes you can actually revise from. Here's how the four pieces fit together:</p>
+    <div class="onboard-steps">
+      <div class="onboard-step"><div class="num">1</div><div><b style="color:var(--fg)">My Workflows</b> — ready-made templates for quizzing yourself, building spaced-repetition sets, and turning lecture notes into structured summaries. Fill in the blanks and copy.</div></div>
+      <div class="onboard-step"><div class="num">2</div><div><b style="color:var(--fg)">Building Blocks</b> — the raw ingredients (role, context, constraints...) so you understand *why* a prompt works, not just copy it blindly.</div></div>
+      <div class="onboard-step"><div class="num">3</div><div><b style="color:var(--fg)">Prompt Builder</b> — mix blocks yourself for a one-off need, with a live preview as you go.</div></div>
+      <div class="onboard-step"><div class="num">4</div><div><b style="color:var(--fg)">Loop Builder</b> — turn any prompt into a repeating self-test loop: define a goal, how to judge success, and when to stop.</div></div>
+    </div>
+    <button class="btn primary" id="onboardStart" style="width:100%; justify-content:center; padding:12px;">Start using my playbook</button>
+  </div>
+</div>
+
+<div class="copy-toast" id="copyToast">✓ Copied to clipboard</div>
+
+<script>
+/* =========================================================================
+   DATA MODEL
+   ========================================================================= */
+
+const BLOCK_LIBRARY = {
+  role: {
+    label: "Role", icon:"👤",
+    why: "Tells Claude what expertise and perspective to answer from. Changes vocabulary, depth, and what gets assumed as 'obvious'.",
+    options: [
+      {v:"You are an expert tutor in {subject}, skilled at explaining {subject} concepts to undergraduate students at exactly the right level of depth.", label:"Expert Tutor"},
+      {v:"You are a strict but fair examiner setting {subject} exam questions at university level.", label:"Exam Setter"},
+      {v:"You are a study partner who thinks out loud, checks your reasoning step by step, and never just gives the final answer.", label:"Socratic Study Partner"},
+      {v:"You are a teaching assistant who specializes in turning dense material into clear, structured notes.", label:"Notes TA"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  objective: {
+    label: "Objective", icon:"🎯",
+    why: "The single clear task you want done. Vague objectives produce vague, generic answers — be specific about the deliverable.",
+    options: [
+      {v:"Generate {n} practice questions on {topic}, ranging from basic recall to applied problem-solving, with an answer key.", label:"Generate practice questions"},
+      {v:"Quiz me on {topic} one question at a time. Wait for my answer before giving feedback or the next question.", label:"Interactive quiz (one at a time)"},
+      {v:"Summarize {topic} into structured notes I can revise from later: key definitions, formulas, worked examples, and common mistakes.", label:"Structured revision notes"},
+      {v:"Review my answer to the following problem and identify exactly where my reasoning went wrong.", label:"Review my work"},
+      {v:"Explain {topic} using a concrete analogy first, then the formal/technical explanation.", label:"Explain a concept"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  context: {
+    label: "Context", icon:"📎",
+    why: "Background Claude needs but shouldn't have to guess: your course level, what you already know, and what materials you're working from.",
+    options: [
+      {v:"This is for a {level} course. I already understand {known}, but I'm struggling with {gap}.", label:"Course level + gaps"},
+      {v:"I'm preparing for an exam in {timeframe}. The exam covers: {topics_list}.", label:"Exam prep timeframe"},
+      {v:"Here is my source material: {paste_notes_or_textbook_excerpt}", label:"Pasted source material"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  constraints: {
+    label: "Constraints", icon:"🚧",
+    why: "Boundaries that keep the output usable — length, difficulty, what to avoid. Without these, Claude picks defaults that may not fit your need.",
+    options: [
+      {v:"Keep each question under 3 sentences. Do not include the answer until I ask for it.", label:"Withhold answers until asked"},
+      {v:"Difficulty should match {level} — not research-level, not high-school level.", label:"Calibrate difficulty"},
+      {v:"Do not just restate the textbook definition — require application or calculation.", label:"No rote-definition questions"},
+      {v:"Limit the response to {word_limit} words.", label:"Word limit"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  reasoning: {
+    label: "Reasoning strategy", icon:"🧠",
+    why: "How you want Claude to think before answering — step-by-step, from first principles, etc. This affects accuracy on multi-step problems far more than wording does.",
+    options: [
+      {v:"Think through the problem step by step before giving the final answer. Show your work.", label:"Step-by-step (show work)"},
+      {v:"Solve it two different ways and check that both methods agree before presenting the answer.", label:"Cross-check with two methods"},
+      {v:"Break the problem into sub-parts, solve each, then combine them into the final answer.", label:"Decompose into sub-problems"},
+      {v:"Give the answer directly without showing intermediate steps.", label:"Direct answer (no chain-of-thought)"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  output_format: {
+    label: "Output format", icon:"📐",
+    why: "The shape of the response — a table, numbered list, flashcard pairs, etc. Matching format to how you'll actually use the output saves you reformatting time.",
+    options: [
+      {v:"Format as a numbered list of questions, with a separate 'Answer Key' section at the end.", label:"Numbered Q&A list"},
+      {v:"Format as flashcards: 'Q: ... / A: ...' pairs, one per line.", label:"Flashcard pairs"},
+      {v:"Format as a markdown table with columns: Concept | Definition | Formula | Common Mistake.", label:"Revision table"},
+      {v:"Format as headed sections with bullet points under each heading.", label:"Headed bullet sections"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  tone: {
+    label: "Tone", icon:"🎚️",
+    why: "How the response should sound. Small, but affects whether feedback feels encouraging or purely clinical — matters for repeated study sessions.",
+    options: [
+      {v:"Direct and concise — no filler, no unnecessary encouragement.", label:"Direct & concise"},
+      {v:"Encouraging but honest — point out mistakes clearly, but keep the tone supportive.", label:"Encouraging but honest"},
+      {v:"Formal, exam-board style.", label:"Formal / exam style"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  examples: {
+    label: "Examples", icon:"🧩",
+    why: "One or two worked examples anchor the style and difficulty you want far better than a paragraph of description ('few-shot' prompting).",
+    options: [
+      {v:"Here is an example of the style/difficulty I want:\n{example_1}", label:"One worked example"},
+      {v:"Here are two examples showing the range I want, from easy to hard:\n{example_1}\n{example_2}", label:"Two examples (range)"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  },
+  quality_check: {
+    label: "Quality check", icon:"✅",
+    why: "A final self-check instruction Claude runs before responding — catches errors, checks the format was followed, or flags uncertainty.",
+    options: [
+      {v:"Before answering, double-check any calculations are correct.", label:"Double-check calculations"},
+      {v:"After drafting, verify every question actually matches the requested difficulty level, and revise any that don't.", label:"Verify difficulty match"},
+      {v:"If you are not confident about a fact, say so explicitly rather than presenting it as certain.", label:"Flag uncertainty"},
+      {v:"custom", label:"Custom (write your own)"}
+    ]
+  }
+};
+
+const LOOP_BLOCKS = {
+  goal: {
+    label:"Goal", icon:"🏁",
+    why:"What the loop is trying to achieve overall — the outcome, not the individual step. Everything else in the loop serves this.",
+    options:[
+      {v:"Get me to a point where I can solve {topic} problems correctly without help, at {level} difficulty.", label:"Master a topic"},
+      {v:"Produce a complete, accurate set of revision notes covering all of: {topics_list}.", label:"Complete notes set"},
+      {v:"custom", label:"Custom"}
+    ]
+  },
+  eval_criteria: {
+    label:"Evaluation criteria", icon:"📊",
+    why:"How Claude decides if the current attempt is 'good enough' — concrete and checkable, not a vague feeling.",
+    options:[
+      {v:"I've answered {n} consecutive questions correctly on the first try.", label:"N correct in a row"},
+      {v:"I score at least {score}% across a {n}-question test.", label:"Score threshold on a test"},
+      {v:"Every listed topic has at least one worked example and one practice question.", label:"Full topic coverage"},
+      {v:"custom", label:"Custom"}
+    ]
+  },
+  improvement_strategy: {
+    label:"Improvement strategy", icon:"📈",
+    why:"What changes between loop iterations when the goal isn't met yet — e.g. get harder, target weak spots, add more examples.",
+    options:[
+      {v:"After each wrong answer, ask a simpler question on the same sub-concept before returning to the original difficulty.", label:"Step down, then step back up"},
+      {v:"Track which specific sub-topics I get wrong and weight the next round of questions toward those.", label:"Weight toward weak spots"},
+      {v:"Increase difficulty by one level every time I get 3 in a row correct.", label:"Ramp difficulty on success"},
+      {v:"custom", label:"Custom"}
+    ]
+  },
+  stop_conditions: {
+    label:"Stop conditions", icon:"🛑",
+    why:"Explicit rule(s) for ending the loop — prevents it running forever or stopping too early. At least one hard stop is required.",
+    options:[
+      {v:"Stop once the evaluation criteria above is met, OR after {max_rounds} rounds, whichever comes first.", label:"Success OR max rounds"},
+      {v:"Stop after {max_minutes} minutes of study time, regardless of score.", label:"Time limit"},
+      {v:"Stop if I answer 'stop' or 'done' at any point.", label:"Manual stop keyword"},
+      {v:"custom", label:"Custom"}
+    ]
+  },
+  safety_rules: {
+    label:"Safety rules", icon:"🛡️",
+    why:"Guardrails so the loop stays useful and honest — e.g. never fabricate a source, never mark a wrong answer as correct to be encouraging.",
+    options:[
+      {v:"Never mark an incorrect answer as correct, even partially. Be precise about what was right and what wasn't.", label:"No false positives on grading"},
+      {v:"Never invent facts, formulas, or sources. If unsure, say so instead of guessing.", label:"No fabrication"},
+      {v:"If I seem to be guessing rather than reasoning, pause the quiz and explain the underlying concept first.", label:"Pause on guessing pattern"},
+      {v:"custom", label:"Custom"}
+    ]
+  }
+};
+
+// Prebuilt workflow templates, personalized to a STEM student doing study/exam prep with Claude
+const DEFAULT_WORKFLOWS = [
+  {
+    id:"wf1", title:"Interactive Self-Quiz", category:"Practice & Self-Testing",
+    desc:"One question at a time, waits for your answer, gives targeted feedback before moving on — better for retention than a static question list.",
+    tags:["quiz","active recall","STEM"],
+    template:`You are an expert tutor in {{subject}}. Quiz me on {{topic}} one question at a time — do not show the next question until I've answered the current one.
+
+For each of my answers:
+1. Say whether it's correct, partially correct, or incorrect.
+2. If wrong or partial, explain exactly where the reasoning broke down (not just the right answer).
+3. Then give the next question, calibrated to {{level}} difficulty.
+
+Start with question 1 now. Do not front-load all questions at once.`,
+    vars:[
+      {key:"subject", label:"Subject", type:"text", placeholder:"e.g. Thermodynamics"},
+      {key:"topic", label:"Specific topic", type:"text", placeholder:"e.g. First law of thermodynamics"},
+      {key:"level", label:"Difficulty level", type:"select", options:["Intro / foundational","Undergraduate core","Advanced / exam-level"]}
+    ],
+    practices:[
+      "Answer honestly rather than guessing — the loop only works if feedback is based on your real reasoning.",
+      "If a topic keeps tripping you up, ask Claude to explain it before continuing the quiz.",
+      "Pair this with the Loop Builder to auto-stop once you hit a target score."
+    ]
+  },
+  {
+    id:"wf2", title:"Practice Question Set + Answer Key", category:"Practice & Self-Testing",
+    desc:"Generates a batch of graded-difficulty practice questions with a separate answer key, so you can test yourself before checking.",
+    tags:["practice set","exam prep"],
+    template:`You are a strict but fair examiner setting {{subject}} questions at {{level}} level.
+
+Generate {{n_questions}} practice questions on {{topic}}, ordered from easier to harder. Requirements:
+- Mix recall, applied problem-solving, and at least one multi-step question.
+- Do not include the answers inline.
+- After all questions, add a section titled "Answer Key" with full worked solutions.
+
+Format as a numbered list of questions, then the answer key.`,
+    vars:[
+      {key:"subject", label:"Subject", type:"text", placeholder:"e.g. Linear Algebra"},
+      {key:"topic", label:"Topic", type:"text", placeholder:"e.g. Eigenvalues and eigenvectors"},
+      {key:"level", label:"Difficulty", type:"select", options:["Intro / foundational","Undergraduate core","Advanced / exam-level"]},
+      {key:"n_questions", label:"Number of questions", type:"select", options:["5","8","10","15"]}
+    ],
+    practices:[
+      "Cover the questions with a hand or note before scrolling to the answer key — resist peeking.",
+      "Re-run with the same topic a few days later to check retention, not just first-pass understanding."
+    ]
+  },
+  {
+    id:"wf3", title:"Lecture Notes → Structured Revision Notes", category:"Notes & Summaries",
+    desc:"Turns messy lecture notes or textbook excerpts into a clean table of definitions, formulas, worked examples, and common mistakes.",
+    tags:["notes","summarize"],
+    template:`You are a teaching assistant who specializes in turning dense material into clear, structured revision notes.
+
+Here is my source material:
+{{source_material}}
+
+Turn this into structured revision notes on {{topic}}. Format as a markdown table with columns:
+Concept | Definition | Formula (if any) | Common Mistake
+
+After the table, add a short "Big Picture" paragraph (3-4 sentences) connecting the concepts together.`,
+    vars:[
+      {key:"topic", label:"Topic name", type:"text", placeholder:"e.g. Chemical equilibrium"},
+      {key:"source_material", label:"Paste your notes / textbook excerpt", type:"textarea", placeholder:"Paste raw lecture notes here..."}
+    ],
+    practices:[
+      "Paste real notes, not a topic name alone — the table quality depends heavily on source detail.",
+      "Ask a follow-up 'quiz me on this table' to immediately convert notes into practice."
+    ]
+  },
+  {
+    id:"wf4", title:"Concept Explainer (Analogy First)", category:"Understanding Concepts",
+    desc:"Explains a tricky concept with an intuitive analogy before the formal/technical version — good for building real understanding, not just memorization.",
+    tags:["explain","intuition"],
+    template:`You are an expert tutor in {{subject}}, skilled at explaining concepts to undergraduate students at exactly the right level of depth.
+
+Explain {{topic}} in two parts:
+1. An intuitive analogy or everyday comparison that captures the core idea (no jargon).
+2. The formal/technical explanation, using correct terminology and, if relevant, the governing equation(s).
+
+Keep the whole explanation under {{word_limit}} words. End with one question that checks whether I actually understood it.`,
+    vars:[
+      {key:"subject", label:"Subject", type:"text", placeholder:"e.g. Quantum Mechanics"},
+      {key:"topic", label:"Concept to explain", type:"text", placeholder:"e.g. Wave-particle duality"},
+      {key:"word_limit", label:"Word limit", type:"select", options:["150","300","500"]}
+    ],
+    practices:[
+      "Try answering the check-question out loud before reading further — it's the fastest signal of real understanding.",
+      "If the analogy doesn't click, ask for a second, different analogy rather than re-reading the same one."
+    ]
+  },
+  {
+    id:"wf5", title:"Review My Worked Answer", category:"Practice & Self-Testing",
+    desc:"Paste your own solution to a problem; Claude finds exactly where the reasoning breaks, not just whether the final number is right.",
+    tags:["feedback","error analysis"],
+    template:`You are a study partner who checks reasoning step by step and never just gives the final verdict without explanation.
+
+Problem:
+{{problem_statement}}
+
+My worked solution:
+{{my_solution}}
+
+Review my solution step by step. For each step, say whether it's valid. The moment you find an error, stop and explain precisely what went wrong and why — do not just give me the correct final answer. Then let me try to fix that step myself before you continue reviewing.`,
+    vars:[
+      {key:"problem_statement", label:"Problem statement", type:"textarea", placeholder:"Paste the original question..."},
+      {key:"my_solution", label:"Your worked solution", type:"textarea", placeholder:"Paste your step-by-step attempt..."}
+    ],
+    practices:[
+      "Show your actual work, including wrong turns — a clean-only answer hides the mistake Claude needs to see.",
+      "Try to fix the flagged step yourself before asking Claude to reveal the fix."
+    ]
+  },
+  {
+    id:"wf6", title:"Exam Countdown Study Plan", category:"Exam Prep",
+    desc:"Builds a day-by-day study plan across your remaining time before an exam, weighted toward topics you're weakest on.",
+    tags:["planning","exam prep"],
+    template:`You are an expert tutor in {{subject}}.
+
+I have an exam in {{timeframe}}. The exam covers: {{topics_list}}.
+I'm already comfortable with: {{strong_topics}}.
+I'm weakest on: {{weak_topics}}.
+
+Build a day-by-day study plan for the remaining time that:
+- Allocates more time to weak topics, without fully dropping strong ones (light review only).
+- Includes at least one self-test checkpoint every 2-3 days.
+- Ends with a full mixed practice test in the final 1-2 days.
+
+Format as a table: Day | Focus Topic(s) | Activity | Est. Time.`,
+    vars:[
+      {key:"subject", label:"Subject", type:"text", placeholder:"e.g. Organic Chemistry"},
+      {key:"timeframe", label:"Time until exam", type:"text", placeholder:"e.g. 10 days"},
+      {key:"topics_list", label:"All exam topics", type:"textarea", placeholder:"List topics, comma-separated"},
+      {key:"strong_topics", label:"Topics you're strong in", type:"text", placeholder:"e.g. Nomenclature"},
+      {key:"weak_topics", label:"Topics you're weak in", type:"text", placeholder:"e.g. Reaction mechanisms"}
+    ],
+    practices:[
+      "Revisit and regenerate the plan every 2-3 days as your strong/weak list shifts.",
+      "Treat the self-test checkpoints as non-negotiable — they're what catches a plan that looks fine but isn't working."
+    ]
+  }
+];
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+const LS_KEYS = { workflows:"aip_workflows", favorites:"aip_favorites", theme:"aip_theme", onboarded:"aip_onboarded", explainerDismissed:"aip_explainer_dismissed" };
+
+function loadWorkflows(){
+  const raw = localStorage.getItem(LS_KEYS.workflows);
+  if(raw){ try { return JSON.parse(raw); } catch(e){ /* fallthrough */ } }
+  localStorage.setItem(LS_KEYS.workflows, JSON.stringify(DEFAULT_WORKFLOWS));
+  return JSON.parse(JSON.stringify(DEFAULT_WORKFLOWS));
+}
+function saveWorkflows(){ localStorage.setItem(LS_KEYS.workflows, JSON.stringify(state.workflows)); }
+function loadFavorites(){ try { return JSON.parse(localStorage.getItem(LS_KEYS.favorites)) || []; } catch(e){ return []; } }
+function saveFavorites(){ localStorage.setItem(LS_KEYS.favorites, JSON.stringify(state.favorites)); }
+
+const state = {
+  view:"dashboard",
+  workflows: loadWorkflows(),
+  favorites: loadFavorites(),
+  searchTerm:"",
+  activeCategory:"All",
+  builderBlocks: [], // prompt builder assembled blocks: {type, value, custom}
+  loopBlocks: [],
+  theme: localStorage.getItem(LS_KEYS.theme) || "dark"
+};
+
+document.body.setAttribute("data-theme", state.theme);
+
+/* =========================================================================
+   RENDER HELPERS
+   ========================================================================= */
+const content = document.getElementById("content");
+const pageTitle = document.getElementById("pageTitle");
+const pageSub = document.getElementById("pageSub");
+
+const VIEW_META = {
+  dashboard:{title:"Dashboard", sub:"Your saved AI study workflows, at a glance"},
+  workflows:{title:"My Workflows", sub:"Every workflow you have — search, filter, favorite, and reuse"},
+  library:{title:"Building Blocks", sub:"The reusable pieces every prompt is made from — combine them in the Prompt Builder"},
+  promptbuilder:{title:"Prompt Builder", sub:"Assemble a one-off prompt from blocks, with a live preview"},
+  loopbuilder:{title:"Loop Builder", sub:"Turn a prompt into a self-checking, repeating study loop"},
+  guide:{title:"How This Works", sub:"A short walkthrough of every section in this playbook"}
+};
+
+function setView(v){
+  state.view = v;
+  document.querySelectorAll(".nav-item").forEach(el=>el.classList.toggle("active", el.dataset.view===v));
+  pageTitle.textContent = VIEW_META[v].title;
+  pageSub.textContent = VIEW_META[v].sub;
+  render();
+  window.scrollTo(0,0);
+}
+
+document.querySelectorAll(".nav-item").forEach(el=>{
+  el.addEventListener("click", ()=> setView(el.dataset.view));
+});
+
+function categoriesOf(workflows){
+  const set = new Set(workflows.map(w=>w.category));
+  return ["All", ...Array.from(set)];
+}
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function toast(msg){
+  const t = document.getElementById("copyToast");
+  t.textContent = "✓ " + msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+function copyText(txt){
+  navigator.clipboard?.writeText(txt).then(()=>toast("Copied to clipboard")).catch(()=>{
+    const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove(); toast("Copied to clipboard");
+  });
+}
+
+/* =========================================================================
+   EXPLAINER BANNER (persistent, dismissible)
+   ========================================================================= */
+function explainerHTML(){
+  if(localStorage.getItem(LS_KEYS.explainerDismissed)==="1") return "";
+  return `
+  <div class="explainer" id="explainerBanner">
+    <button class="close-x" id="explainerClose" title="Dismiss">✕</button>
+    <div class="glyph">◆</div>
+    <div>
+      <h3>What this tool does</h3>
+      <p>This is your personal library of reusable AI prompt templates for studying — built for practice questions, self-testing, and structured notes in STEM subjects, using Claude. Browse ready-made <b>Workflows</b>, learn the <b>Building Blocks</b> they're made from, or assemble your own in the <b>Prompt Builder</b> / <b>Loop Builder</b>.</p>
+      <div class="explainer-list">
+        <span>▤ My Workflows — ready templates</span>
+        <span>▥ Building Blocks — the ingredients</span>
+        <span>✎ Prompt Builder — assemble one-off prompts</span>
+        <span>⟲ Loop Builder — repeating self-test routines</span>
+      </div>
+    </div>
+  </div>`;
+}
+function bindExplainer(){
+  const closeBtn = document.getElementById("explainerClose");
+  if(closeBtn) closeBtn.addEventListener("click", ()=>{
+    localStorage.setItem(LS_KEYS.explainerDismissed,"1");
+    document.getElementById("explainerBanner").remove();
+  });
+}
+
+/* =========================================================================
+   VIEW: DASHBOARD
+   ========================================================================= */
+function renderDashboard(){
+  const total = state.workflows.length;
+  const favCount = state.favorites.length;
+  const cats = categoriesOf(state.workflows).filter(c=>c!=="All");
+
+  const catCounts = cats.map(c=>({c, n: state.workflows.filter(w=>w.category===c).length}));
+
+  content.innerHTML = `
+    ${explainerHTML()}
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); margin-bottom:26px;">
+      <div class="card" style="align-items:flex-start;">
+        <div class="card-cat">Total workflows</div>
+        <div style="font-family:var(--font-display); font-size:30px;">${total}</div>
+        <div class="card-desc">Saved templates ready to use</div>
+      </div>
+      <div class="card" style="align-items:flex-start;">
+        <div class="card-cat">Favorites</div>
+        <div style="font-family:var(--font-display); font-size:30px;">${favCount}</div>
+        <div class="card-desc">Starred for quick access</div>
+      </div>
+      <div class="card" style="align-items:flex-start;">
+        <div class="card-cat">Categories</div>
+        <div style="font-family:var(--font-display); font-size:30px;">${cats.length}</div>
+        <div class="card-desc">${cats.join(", ")}</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>Quick actions</h2>
+      <div class="sub">Jump straight to what you need</div>
+    </div>
+    <div class="grid" style="margin-bottom:30px;">
+      <div class="card">
+        <div class="card-title">✎ Build a new prompt</div>
+        <div class="card-desc">Assemble role, objective, context, and format into a custom one-off prompt, with a live preview as you go.</div>
+        <div class="card-actions"><button class="btn primary" data-goto="promptbuilder">Open Prompt Builder</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⟲ Build a study loop</div>
+        <div class="card-desc">Turn any prompt into a repeating routine — e.g. keep quizzing you until you hit a target score.</div>
+        <div class="card-actions"><button class="btn primary" data-goto="loopbuilder">Open Loop Builder</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">★ Your favorites</div>
+        <div class="card-desc">${favCount ? "Jump back to the workflows you've starred for fast access." : "You haven't starred any workflows yet — star one from My Workflows."}</div>
+        <div class="card-actions"><button class="btn" data-goto="workflows">View My Workflows</button></div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>By category</h2>
+      <div class="sub">Workflows organized around how you actually study</div>
+    </div>
+    <div class="grid">
+      ${catCounts.map(cc=>`
+        <div class="card">
+          <div class="card-title">${escapeHtml(cc.c)}</div>
+          <div class="card-desc">${cc.n} workflow${cc.n===1?"":"s"} in this category</div>
+          <div class="card-actions"><button class="btn small" data-goto-cat="${escapeHtml(cc.c)}">Browse</button></div>
+        </div>`).join("")}
+    </div>
+  `;
+  bindExplainer();
+  content.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.goto)));
+  content.querySelectorAll("[data-goto-cat]").forEach(b=>b.addEventListener("click",()=>{
+    state.activeCategory = b.dataset.gotoCat;
+    setView("workflows");
+  }));
+}
+
+/* =========================================================================
+   VIEW: MY WORKFLOWS
+   ========================================================================= */
+function renderWorkflows(){
+  const cats = categoriesOf(state.workflows);
+  const term = state.searchTerm.toLowerCase();
+  let list = state.workflows.filter(w=>{
+    const matchesCat = state.activeCategory==="All" || w.category===state.activeCategory;
+    const matchesTerm = !term || (w.title+w.desc+w.tags.join(" ")).toLowerCase().includes(term);
+    return matchesCat && matchesTerm;
+  });
+
+  content.innerHTML = `
+    ${explainerHTML()}
+    <div class="toolbar">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Search workflows by name, tag, or description..." value="${escapeHtml(state.searchTerm)}">
+      </div>
+      <button class="btn primary" id="newWorkflowBtn">+ New workflow</button>
+    </div>
+    <div class="chip-row" style="margin-bottom:20px;">
+      ${cats.map(c=>`<button class="chip ${c===state.activeCategory?'active':''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}
+    </div>
+    <div class="grid" id="wfGrid"></div>
+  `;
+  bindExplainer();
+
+  const grid = document.getElementById("wfGrid");
+  if(list.length===0){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;">
+      <div class="glyph">▤</div>
+      <h4>No workflows match this search</h4>
+      <p>Try a different term, clear the filter, or create a new workflow from scratch.</p>
+    </div>`;
+  } else {
+    grid.innerHTML = list.map(w=>workflowCardHTML(w)).join("");
+  }
+
+  document.getElementById("searchInput").addEventListener("input",(e)=>{ state.searchTerm = e.target.value; renderWorkflows(); });
+  document.querySelectorAll("[data-cat]").forEach(el=>el.addEventListener("click",()=>{ state.activeCategory = el.dataset.cat; renderWorkflows(); }));
+  document.getElementById("newWorkflowBtn").addEventListener("click", openBlankWorkflowEditor);
+
+  grid.querySelectorAll("[data-open]").forEach(el=>el.addEventListener("click",()=>openTemplateModal(el.dataset.open)));
+  grid.querySelectorAll("[data-star]").forEach(el=>el.addEventListener("click",(e)=>{ e.stopPropagation(); toggleFavorite(el.dataset.star); }));
+  grid.querySelectorAll("[data-dup]").forEach(el=>el.addEventListener("click",(e)=>{ e.stopPropagation(); duplicateWorkflow(el.dataset.dup); }));
+  grid.querySelectorAll("[data-del]").forEach(el=>el.addEventListener("click",(e)=>{ e.stopPropagation(); deleteWorkflow(el.dataset.del); }));
+}
+
+function workflowCardHTML(w){
+  const isFav = state.favorites.includes(w.id);
+  return `
+    <div class="card" data-open="${w.id}" style="cursor:pointer;">
+      <div class="card-top">
+        <div>
+          <div class="card-cat">${escapeHtml(w.category)}</div>
+          <div class="card-title">${escapeHtml(w.title)}</div>
+        </div>
+        <button class="star-btn ${isFav?'active':''}" data-star="${w.id}" title="Favorite">${isFav?'★':'☆'}</button>
+      </div>
+      <div class="card-desc">${escapeHtml(w.desc)}</div>
+      <div class="card-tags">${w.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
+      <div class="card-actions">
+        <button class="btn small primary" data-open="${w.id}">Open</button>
+        <button class="btn small ghost" data-dup="${w.id}">Duplicate</button>
+        <button class="btn small ghost" data-del="${w.id}" style="color:var(--danger);">Delete</button>
+      </div>
+    </div>`;
+}
+
+function toggleFavorite(id){
+  const i = state.favorites.indexOf(id);
+  if(i>-1) state.favorites.splice(i,1); else state.favorites.push(id);
+  saveFavorites();
+  render();
+}
+function duplicateWorkflow(id){
+  const w = state.workflows.find(x=>x.id===id);
+  if(!w) return;
+  const copy = JSON.parse(JSON.stringify(w));
+  copy.id = "wf_"+Date.now();
+  copy.title = w.title + " (copy)";
+  state.workflows.push(copy);
+  saveWorkflows();
+  render();
+  toast("Workflow duplicated");
+}
+function deleteWorkflow(id){
+  if(!confirm("Delete this workflow? This can't be undone.")) return;
+  state.workflows = state.workflows.filter(w=>w.id!==id);
+  state.favorites = state.favorites.filter(f=>f!==id);
+  saveWorkflows(); saveFavorites();
+  render();
+  toast("Workflow deleted");
+}
+
+/* ---- blank workflow editor (create-your-own) ---- */
+function openBlankWorkflowEditor(){
+  const overlay = document.getElementById("templateModalOverlay");
+  const modal = document.getElementById("templateModal");
+  modal.innerHTML = `
+    <button class="modal-close" data-close="templateModalOverlay">✕</button>
+    <h3>New workflow</h3>
+    <div class="modal-sub">Create your own reusable template. Use {{double_braces}} for editable variables.</div>
+    <div class="var-row"><label>Title</label><input id="nwTitle" placeholder="e.g. Weekly Recap Quiz"></div>
+    <div class="var-row"><label>Category</label><input id="nwCategory" placeholder="e.g. Practice & Self-Testing"></div>
+    <div class="var-row"><label>Short description</label><input id="nwDesc" placeholder="What this template is for"></div>
+    <div class="var-row"><label>Tags <span class="hint">(comma-separated)</span></label><input id="nwTags" placeholder="quiz, weekly"></div>
+    <div class="var-row"><label>Prompt template <span class="hint">use {{variable_name}} for blanks</span></label>
+      <textarea id="nwTemplate" style="min-height:140px;" placeholder="You are a... {{subject}} ..."></textarea>
+    </div>
+    <button class="btn primary" id="nwSave" style="width:100%; justify-content:center; padding:11px;">Save workflow</button>
+  `;
+  overlay.classList.add("open");
+  document.getElementById("nwSave").addEventListener("click", ()=>{
+    const title = document.getElementById("nwTitle").value.trim() || "Untitled workflow";
+    const category = document.getElementById("nwCategory").value.trim() || "Custom";
+    const desc = document.getElementById("nwDesc").value.trim();
+    const tags = document.getElementById("nwTags").value.split(",").map(s=>s.trim()).filter(Boolean);
+    const template = document.getElementById("nwTemplate").value;
+    const varNames = Array.from(new Set((template.match(/{{(.*?)}}/g)||[]).map(m=>m.replace(/[{}]/g,"").trim())));
+    const vars = varNames.map(v=>({key:v, label:v.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase()), type:"text", placeholder:""}));
+    const w = {id:"wf_"+Date.now(), title, category, desc, tags, template, vars, practices:[]};
+    state.workflows.push(w);
+    saveWorkflows();
+    overlay.classList.remove("open");
+    render();
+    toast("Workflow created");
+  });
+}
+
+/* ---- template modal (open a workflow, fill variables, live preview, copy) ---- */
+function openTemplateModal(id){
+  const w = state.workflows.find(x=>x.id===id);
+  if(!w) return;
+  const overlay = document.getElementById("templateModalOverlay");
+  const modal = document.getElementById("templateModal");
+
+  const varsHtml = (w.vars||[]).map(v=>{
+    if(v.type==="select"){
+      return `<div class="var-row"><label>${escapeHtml(v.label)}</label>
+        <select data-var="${v.key}">${v.options.map(o=>`<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("")}</select></div>`;
+    } else if(v.type==="textarea"){
+      return `<div class="var-row"><label>${escapeHtml(v.label)}</label>
+        <textarea data-var="${v.key}" placeholder="${escapeHtml(v.placeholder||"")}"></textarea></div>`;
+    }
+    return `<div class="var-row"><label>${escapeHtml(v.label)}</label>
+      <input type="text" data-var="${v.key}" placeholder="${escapeHtml(v.placeholder||"")}"></div>`;
+  }).join("");
+
+  modal.innerHTML = `
+    <button class="modal-close" data-close="templateModalOverlay">✕</button>
+    <h3>${escapeHtml(w.title)}</h3>
+    <div class="modal-sub">${escapeHtml(w.desc)}</div>
+    <div class="builder-grid">
+      <div>
+        <h4 style="font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--fg-mid); margin-bottom:10px;">Fill in the variables</h4>
+        ${varsHtml || `<p style="font-size:13px; color:var(--fg-lo);">This template has no variables — it's ready to use as-is.</p>`}
+        ${w.practices && w.practices.length ? `
+          <div class="best-practices">
+            <h4>Best practices</h4>
+            <ul>${w.practices.map(p=>`<li>${escapeHtml(p)}</li>`).join("")}</ul>
+          </div>`: ""}
+      </div>
+      <div>
+        <h4 style="font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--fg-mid); margin-bottom:10px;">Live preview</h4>
+        <div class="preview-box" id="tmplPreview"></div>
+        <button class="btn primary mt" id="tmplCopy" style="width:100%; justify-content:center; padding:11px;">Copy prompt</button>
+      </div>
+    </div>
+  `;
+  overlay.classList.add("open");
+
+  function updatePreview(){
+    let txt = w.template;
+    modal.querySelectorAll("[data-var]").forEach(el=>{
+      const key = el.dataset.var;
+      const val = el.value || `{{${key}}}`;
+      txt = txt.split(`{{${key}}}`).join(val);
+    });
+    document.getElementById("tmplPreview").textContent = txt;
+  }
+  modal.querySelectorAll("[data-var]").forEach(el=>el.addEventListener("input", updatePreview));
+  updatePreview();
+
+  document.getElementById("tmplCopy").addEventListener("click", ()=>{
+    copyText(document.getElementById("tmplPreview").textContent);
+  });
+}
+
+/* =========================================================================
+   VIEW: BUILDING BLOCKS LIBRARY
+   ========================================================================= */
+function renderLibrary(){
+  content.innerHTML = `
+    ${explainerHTML()}
+    <div class="section-head">
+      <h2>Building blocks</h2>
+      <div class="sub">Every prompt in this playbook is assembled from these reusable pieces. Understanding them means you can build new prompts on the fly, not just reuse saved ones.</div>
+    </div>
+    <div id="blockGroups"></div>
+  `;
+  bindExplainer();
+  const groups = document.getElementById("blockGroups");
+  groups.innerHTML = Object.entries(BLOCK_LIBRARY).map(([key,def])=>`
+    <div style="margin-bottom:26px;">
+      <div class="flex-between" style="margin-bottom:10px;">
+        <h3 style="font-size:16px; display:flex; align-items:center; gap:8px;"><span>${def.icon}</span>${escapeHtml(def.label)}</h3>
+      </div>
+      <p style="font-size:12.5px; color:var(--fg-mid); margin-bottom:10px; max-width:640px;">${escapeHtml(def.why)}</p>
+      <div class="grid">
+        ${def.options.filter(o=>o.v!=="custom").map(o=>`
+          <div class="card">
+            <div class="card-title" style="font-size:13.5px;">${escapeHtml(o.label)}</div>
+            <div class="card-desc" style="font-family:var(--font-mono); font-size:11.5px;">${escapeHtml(o.v)}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+/* =========================================================================
+   VIEW: PROMPT BUILDER
+   ========================================================================= */
+function renderPromptBuilder(){
+  content.innerHTML = `
+    ${explainerHTML()}
+    <div class="builder-grid">
+      <div class="builder-col">
+        <h3>Add a block</h3>
+        <div class="block-list" id="blockPicker"></div>
+      </div>
+      <div class="builder-col builder-preview-panel">
+        <h3>Your prompt</h3>
+        <div id="assembledList"></div>
+        <div class="preview-box" id="promptPreview" style="margin-top:14px;"></div>
+        <button class="btn primary mt" id="copyPromptBtn" style="width:100%; justify-content:center; padding:11px;">Copy prompt</button>
+        <button class="btn ghost mt" id="saveAsWorkflowBtn" style="width:100%; justify-content:center; padding:10px;">Save as a workflow</button>
+      </div>
+    </div>
+  `;
+  bindExplainer();
+
+  const picker = document.getElementById("blockPicker");
+  picker.innerHTML = Object.entries(BLOCK_LIBRARY).map(([key,def])=>`
+    <div class="block-picker-item" data-add="${key}">
+      <div class="bp-head">
+        <div>
+          <div class="bp-title">${def.icon} ${escapeHtml(def.label)}</div>
+          <div class="bp-desc">${escapeHtml(def.why)}</div>
+        </div>
+        <div class="add-plus">+</div>
+      </div>
+    </div>
+  `).join("");
+  picker.querySelectorAll("[data-add]").forEach(el=>el.addEventListener("click",()=>{
+    const key = el.dataset.add;
+    const def = BLOCK_LIBRARY[key];
+    state.builderBlocks.push({type:key, optionIndex:0, custom:""});
+    renderAssembled();
+  }));
+
+  renderAssembled();
+
+  document.getElementById("copyPromptBtn").addEventListener("click", ()=>{
+    copyText(document.getElementById("promptPreview").textContent);
+  });
+  document.getElementById("saveAsWorkflowBtn").addEventListener("click", saveBuilderAsWorkflow);
+}
+
+function currentBuilderText(){
+  return state.builderBlocks.map(b=>{
+    const def = BLOCK_LIBRARY[b.type];
+    const opt = def.options[b.optionIndex];
+    const val = opt.v === "custom" ? b.custom : opt.v;
+    return val;
+  }).filter(Boolean).join("\n\n");
+}
+
+function renderAssembled(){
+  const listEl = document.getElementById("assembledList");
+  if(state.builderBlocks.length===0){
+    listEl.innerHTML = `<div class="empty"><div class="glyph">✎</div><h4>No blocks added yet</h4><p>Add blocks from the left — Role and Objective are a good place to start.</p></div>`;
+  } else {
+    listEl.innerHTML = state.builderBlocks.map((b,i)=>{
+      const def = BLOCK_LIBRARY[b.type];
+      const opt = def.options[b.optionIndex];
+      const isCustom = opt.v === "custom";
+      return `
+        <div class="assembled-block">
+          <div class="ab-head">
+            <div>
+              <div class="ab-title">${def.icon} ${escapeHtml(def.label)}</div>
+              <div class="ab-desc">${escapeHtml(def.why)}</div>
+            </div>
+            <button class="remove-x" data-remove="${i}">✕</button>
+          </div>
+          <select data-select="${i}">
+            ${def.options.map((o,oi)=>`<option value="${oi}" ${oi===b.optionIndex?'selected':''}>${escapeHtml(o.label)}</option>`).join("")}
+          </select>
+          ${isCustom ? `<textarea data-custom="${i}" placeholder="Write your own ${def.label.toLowerCase()}...">${escapeHtml(b.custom)}</textarea>` : `<textarea data-edit="${i}">${escapeHtml(opt.v)}</textarea>`}
+        </div>`;
+    }).join("");
+
+    listEl.querySelectorAll("[data-remove]").forEach(el=>el.addEventListener("click",()=>{
+      state.builderBlocks.splice(+el.dataset.remove,1);
+      renderAssembled();
+    }));
+    listEl.querySelectorAll("[data-select]").forEach(el=>el.addEventListener("change",()=>{
+      const i = +el.dataset.select;
+      state.builderBlocks[i].optionIndex = +el.value;
+      state.builderBlocks[i].custom = "";
+      renderAssembled();
+    }));
+    listEl.querySelectorAll("[data-custom]").forEach(el=>el.addEventListener("input",()=>{
+      const i = +el.dataset.custom;
+      state.builderBlocks[i].custom = el.value;
+      updatePromptPreview();
+    }));
+    listEl.querySelectorAll("[data-edit]").forEach(el=>el.addEventListener("input",()=>{
+      const i = +el.dataset.edit;
+      const def = BLOCK_LIBRARY[state.builderBlocks[i].type];
+      def.options[state.builderBlocks[i].optionIndex] = {...def.options[state.builderBlocks[i].optionIndex], v: el.value};
+      updatePromptPreview();
+    }));
+  }
+  updatePromptPreview();
+}
+
+function updatePromptPreview(){
+  const box = document.getElementById("promptPreview");
+  if(!box) return;
+  const txt = currentBuilderText();
+  box.textContent = txt || "Your assembled prompt will appear here as you add blocks.";
+}
+
+function saveBuilderAsWorkflow(){
+  const txt = currentBuilderText();
+  if(!txt.trim()){ toast("Add at least one block first"); return; }
+  const title = prompt("Name this workflow:", "My custom prompt");
+  if(!title) return;
+  const varNames = Array.from(new Set((txt.match(/{(.*?)}/g)||[]).map(m=>m.replace(/[{}]/g,"").trim()))).filter(v=>v);
+  const vars = varNames.map(v=>({key:v, label:v.replace(/_/g," "), type:"text", placeholder:""}));
+  const w = {id:"wf_"+Date.now(), title, category:"Custom", desc:"Built with the Prompt Builder.", tags:["custom","builder"], template:txt.replace(/{([a-zA-Z0-9_]+)}/g,"{{$1}}"), vars, practices:[]};
+  state.workflows.push(w);
+  saveWorkflows();
+  toast("Saved to My Workflows");
+}
+
+/* =========================================================================
+   VIEW: LOOP BUILDER
+   ========================================================================= */
+function renderLoopBuilder(){
+  content.innerHTML = `
+    ${explainerHTML()}
+    <div class="explainer" style="background:var(--bg-2);">
+      <div class="glyph">⟲</div>
+      <div>
+        <h3>What's a "loop" prompt?</h3>
+        <p>A normal prompt answers once. A <b>loop prompt</b> tells Claude to repeat a cycle — quiz, evaluate, adjust — inside one conversation, checking after each round whether it should keep going, change tactics, or stop. Define the five pieces below and it's assembled into one instruction block you can paste into a chat.</p>
+      </div>
+    </div>
+    <div class="builder-grid">
+      <div class="builder-col">
+        <h3>Add a loop element</h3>
+        <div class="block-list" id="loopPicker"></div>
+      </div>
+      <div class="builder-col builder-preview-panel">
+        <h3>Your loop instructions</h3>
+        <div id="loopAssembledList"></div>
+        <div class="preview-box" id="loopPreview" style="margin-top:14px;"></div>
+        <button class="btn primary mt" id="copyLoopBtn" style="width:100%; justify-content:center; padding:11px;">Copy loop prompt</button>
+        <button class="btn ghost mt" id="saveLoopBtn" style="width:100%; justify-content:center; padding:10px;">Save as a workflow</button>
+      </div>
+    </div>
+  `;
+  bindExplainer();
+
+  const picker = document.getElementById("loopPicker");
+  picker.innerHTML = Object.entries(LOOP_BLOCKS).map(([key,def])=>`
+    <div class="block-picker-item" data-addloop="${key}">
+      <div class="bp-head">
+        <div>
+          <div class="bp-title">${def.icon} ${escapeHtml(def.label)}</div>
+          <div class="bp-desc">${escapeHtml(def.why)}</div>
+        </div>
+        <div class="add-plus">+</div>
+      </div>
+    </div>
+  `).join("");
+  picker.querySelectorAll("[data-addloop]").forEach(el=>el.addEventListener("click",()=>{
+    const key = el.dataset.addloop;
+    state.loopBlocks.push({type:key, optionIndex:0, custom:""});
+    renderLoopAssembled();
+  }));
+
+  renderLoopAssembled();
+  document.getElementById("copyLoopBtn").addEventListener("click", ()=>{
+    copyText(document.getElementById("loopPreview").textContent);
+  });
+  document.getElementById("saveLoopBtn").addEventListener("click", saveLoopAsWorkflow);
+}
+
+function currentLoopText(){
+  if(state.loopBlocks.length===0) return "";
+  const parts = state.loopBlocks.map(b=>{
+    const def = LOOP_BLOCKS[b.type];
+    const opt = def.options[b.optionIndex];
+    const val = opt.v === "custom" ? b.custom : opt.v;
+    return val ? `${def.label.toUpperCase()}: ${val}` : "";
+  }).filter(Boolean);
+  if(parts.length===0) return "";
+  return `Run this as a repeating loop. After each round, check the evaluation criteria before continuing.\n\n` + parts.join("\n\n") + `\n\nAfter each round: state whether the evaluation criteria was met, apply the improvement strategy if not, and check the stop conditions before starting the next round.`;
+}
+
+function renderLoopAssembled(){
+  const listEl = document.getElementById("loopAssembledList");
+  if(state.loopBlocks.length===0){
+    listEl.innerHTML = `<div class="empty"><div class="glyph">⟲</div><h4>No loop elements yet</h4><p>Start with Goal and Stop conditions — those two alone make a usable loop.</p></div>`;
+  } else {
+    listEl.innerHTML = state.loopBlocks.map((b,i)=>{
+      const def = LOOP_BLOCKS[b.type];
+      const opt = def.options[b.optionIndex];
+      const isCustom = opt.v === "custom";
+      return `
+        <div class="assembled-block">
+          <div class="ab-head">
+            <div>
+              <div class="ab-title">${def.icon} ${escapeHtml(def.label)}</div>
+              <div class="ab-desc">${escapeHtml(def.why)}</div>
+            </div>
+            <button class="remove-x" data-lremove="${i}">✕</button>
+          </div>
+          <select data-lselect="${i}">
+            ${def.options.map((o,oi)=>`<option value="${oi}" ${oi===b.optionIndex?'selected':''}>${escapeHtml(o.label)}</option>`).join("")}
+          </select>
+          ${isCustom ? `<textarea data-lcustom="${i}" placeholder="Write your own ${def.label.toLowerCase()}...">${escapeHtml(b.custom)}</textarea>` : `<textarea data-ledit="${i}">${escapeHtml(opt.v)}</textarea>`}
+        </div>`;
+    }).join("");
+
+    listEl.querySelectorAll("[data-lremove]").forEach(el=>el.addEventListener("click",()=>{
+      state.loopBlocks.splice(+el.dataset.lremove,1);
+      renderLoopAssembled();
+    }));
+    listEl.querySelectorAll("[data-lselect]").forEach(el=>el.addEventListener("change",()=>{
+      const i = +el.dataset.lselect;
+      state.loopBlocks[i].optionIndex = +el.value;
+      state.loopBlocks[i].custom = "";
+      renderLoopAssembled();
+    }));
+    listEl.querySelectorAll("[data-lcustom]").forEach(el=>el.addEventListener("input",()=>{
+      state.loopBlocks[+el.dataset.lcustom].custom = el.value;
+      updateLoopPreview();
+    }));
+    listEl.querySelectorAll("[data-ledit]").forEach(el=>el.addEventListener("input",()=>{
+      const i = +el.dataset.ledit;
+      const def = LOOP_BLOCKS[state.loopBlocks[i].type];
+      def.options[state.loopBlocks[i].optionIndex] = {...def.options[state.loopBlocks[i].optionIndex], v: el.value};
+      updateLoopPreview();
+    }));
+  }
+  updateLoopPreview();
+}
+
+function updateLoopPreview(){
+  const box = document.getElementById("loopPreview");
+  if(!box) return;
+  box.textContent = currentLoopText() || "Your assembled loop prompt will appear here as you add elements.";
+}
+
+function saveLoopAsWorkflow(){
+  const txt = currentLoopText();
+  if(!txt.trim()){ toast("Add at least a Goal and Stop condition first"); return; }
+  const title = prompt("Name this loop workflow:", "My study loop");
+  if(!title) return;
+  const varNames = Array.from(new Set((txt.match(/{(.*?)}/g)||[]).map(m=>m.replace(/[{}]/g,"").trim()))).filter(v=>v);
+  const vars = varNames.map(v=>({key:v, label:v.replace(/_/g," "), type:"text", placeholder:""}));
+  const w = {id:"wf_"+Date.now(), title, category:"Loops", desc:"Built with the Loop Builder — a repeating self-test routine.", tags:["loop","custom"], template:txt.replace(/{([a-zA-Z0-9_]+)}/g,"{{$1}}"), vars, practices:["Run this inside a single ongoing conversation so Claude can see prior rounds.","If the loop stalls, tighten the stop condition or lower the evaluation threshold."]};
+  state.workflows.push(w);
+  saveWorkflows();
+  toast("Saved to My Workflows");
+}
+
+/* =========================================================================
+   VIEW: GUIDE
+   ========================================================================= */
+function renderGuide(){
+  content.innerHTML = `
+    ${explainerHTML()}
+    <div class="section-head"><h2>How this playbook fits together</h2><div class="sub">A plain-language walkthrough of every section</div></div>
+    <div style="display:flex; flex-direction:column; gap:16px; max-width:720px;">
+      <div class="card">
+        <div class="card-title">▦ Dashboard</div>
+        <div class="card-desc">A quick overview: how many workflows you've saved, what's favorited, and shortcuts into the builders. Your home base.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">▤ My Workflows</div>
+        <div class="card-desc">Your full library of prompt templates, grouped by category. Open one, fill in the highlighted blanks, see the live preview, and copy it straight into Claude. Search, filter by category, star favorites, duplicate to tweak, or delete.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">▥ Building Blocks</div>
+        <div class="card-desc">Every workflow is made of the same nine ingredient types — Role, Objective, Context, Constraints, Reasoning strategy, Output format, Tone, Examples, Quality check. This page shows each one with a plain explanation of what it does, so you can build your own prompts instead of only reusing saved ones.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">✎ Prompt Builder</div>
+        <div class="card-desc">Pick blocks one at a time, choose a preset or write your own version of each, and watch the full prompt assemble in a live preview. Save the result as a new workflow when you're happy with it.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">⟲ Loop Builder</div>
+        <div class="card-desc">For anything you want repeated automatically — like being quizzed until you hit a score — define a Goal, how success is measured (Evaluation criteria), what changes each round (Improvement strategy), when it ends (Stop conditions), and guardrails (Safety rules). This assembles into one instruction block Claude can follow across multiple rounds in a single conversation.</div>
+      </div>
+    </div>
+  `;
+  bindExplainer();
+}
+
+/* =========================================================================
+   MASTER RENDER
+   ========================================================================= */
+function render(){
+  if(state.view==="dashboard") renderDashboard();
+  else if(state.view==="workflows") renderWorkflows();
+  else if(state.view==="library") renderLibrary();
+  else if(state.view==="promptbuilder") renderPromptBuilder();
+  else if(state.view==="loopbuilder") renderLoopBuilder();
+  else if(state.view==="guide") renderGuide();
+}
+
+/* =========================================================================
+   GLOBAL UI: modals, theme, shortcuts, import/export, onboarding
+   ========================================================================= */
+document.querySelectorAll("[data-close]").forEach(btn=>{
+  btn.addEventListener("click", ()=> document.getElementById(btn.dataset.close).classList.remove("open"));
+});
+document.querySelectorAll(".modal-overlay").forEach(ov=>{
+  ov.addEventListener("click",(e)=>{ if(e.target===ov) ov.classList.remove("open"); });
+});
+
+document.getElementById("helpBtn").addEventListener("click", ()=>document.getElementById("helpModalOverlay").classList.add("open"));
+document.getElementById("shortcutsBtn").addEventListener("click", ()=>document.getElementById("shortcutsModalOverlay").classList.add("open"));
+
+function applyTheme(t){
+  state.theme = t;
+  document.body.setAttribute("data-theme", t);
+  localStorage.setItem(LS_KEYS.theme, t);
+  document.getElementById("themeToggle").innerHTML = (t==="dark" ? "🌙 <span>Switch to light</span>" : "☀️ <span>Switch to dark</span>");
+}
+document.getElementById("themeToggle").addEventListener("click", ()=> applyTheme(state.theme==="dark"?"light":"dark"));
+applyTheme(state.theme);
+
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const data = { workflows: state.workflows, favorites: state.favorites, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "ai-playbook-export.json"; a.click();
+  URL.revokeObjectURL(url);
+  toast("Exported");
+});
+document.getElementById("importBtn").addEventListener("click", ()=> document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change",(e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(data.workflows) { state.workflows = data.workflows; saveWorkflows(); }
+      if(data.favorites) { state.favorites = data.favorites; saveFavorites(); }
+      render();
+      toast("Import successful");
+    } catch(err){ alert("Couldn't read that file — make sure it's a valid export JSON."); }
+  };
+  reader.readAsText(file);
+});
+
+/* keyboard shortcuts */
+let gPressed = false;
+document.addEventListener("keydown",(e)=>{
+  const tag = (e.target.tagName||"").toLowerCase();
+  if(tag==="input"||tag==="textarea"||tag==="select") { if(e.key==="Escape") e.target.blur(); return; }
+  if(e.key==="Escape"){ document.querySelectorAll(".modal-overlay.open").forEach(m=>m.classList.remove("open")); return; }
+  if(e.key==="/"){ e.preventDefault(); setView("workflows"); setTimeout(()=>document.getElementById("searchInput")?.focus(),50); return; }
+  if(e.key==="?"){ document.getElementById("shortcutsModalOverlay").classList.add("open"); return; }
+  if(e.key.toLowerCase()==="t"){ applyTheme(state.theme==="dark"?"light":"dark"); return; }
+  if(e.key.toLowerCase()==="g"){ gPressed = true; setTimeout(()=>gPressed=false, 900); return; }
+  if(gPressed){
+    if(e.key.toLowerCase()==="d") setView("dashboard");
+    if(e.key.toLowerCase()==="p") setView("promptbuilder");
+    if(e.key.toLowerCase()==="l") setView("loopbuilder");
+    gPressed = false;
+  }
+});
+
+/* onboarding (first run only) */
+if(!localStorage.getItem(LS_KEYS.onboarded)){
+  document.getElementById("onboardOverlay").classList.remove("hidden");
+}
+document.getElementById("onboardStart").addEventListener("click", ()=>{
+  localStorage.setItem(LS_KEYS.onboarded,"1");
+  document.getElementById("onboardOverlay").classList.add("hidden");
+});
+
+/* init */
+render();
+</script>
+</body>
+</html>
