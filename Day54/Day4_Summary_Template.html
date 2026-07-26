@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RegionPulse — Day 4 Report</title>
+<style>
+  :root {
+    --blue: #2E86AB;
+    --deep-blue: #1F3B57;
+    --purple: #7B4FE0;
+    --light-purple: #A78BFA;
+    --bg: #F5F3FF;
+    --card: #FFFFFF;
+    --text: #22223B;
+    --muted: #6B7280;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Calibri, sans-serif;
+    background: linear-gradient(160deg, var(--bg) 0%, #EDE9FE 100%);
+    color: var(--text);
+    padding: 40px 20px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  .hero {
+    background: linear-gradient(120deg, var(--deep-blue) 0%, var(--blue) 45%, var(--purple) 100%);
+    border-radius: 20px;
+    padding: 40px 36px;
+    color: white;
+    box-shadow: 0 20px 40px -12px rgba(123,79,224,0.35);
+  }
+  .hero .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .hero h1 { margin: 0 0 8px; font-size: 34px; }
+  .hero p { margin: 0; opacity: 0.9; font-size: 16px; max-width: 560px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: -30px;
+    padding: 0 8px;
+  }
+  .stat {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 10px 25px -10px rgba(31,59,87,0.15);
+    border-top: 4px solid var(--purple);
+  }
+  .stat .num { font-size: 26px; font-weight: 700; color: var(--deep-blue); }
+  .stat .label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .section {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin-top: 24px;
+    box-shadow: 0 10px 25px -12px rgba(31,59,87,0.12);
+  }
+  .section h2 {
+    font-size: 19px;
+    color: var(--deep-blue);
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section h2 .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    display: inline-block;
+  }
+
+  .milestone {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #EEF0F5;
+  }
+  .milestone:last-child { border-bottom: none; }
+  .milestone .badge {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+  }
+  .milestone .content h3 { margin: 0 0 4px; font-size: 15px; color: var(--text); }
+  .milestone .content p { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .milestone .files {
+    margin-top: 6px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .filechip {
+    font-size: 11.5px;
+    font-family: "SF Mono", Consolas, monospace;
+    background: #F0EBFF;
+    color: var(--purple);
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid #E1D5FF;
+  }
+
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0;
+    font-size: 14.5px;
+  }
+  .check {
+    width: 20px; height: 20px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    font-size: 12.5px;
+    padding: 6px 13px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #EDE7FE, #E4F1FA);
+    color: var(--deep-blue);
+    border: 1px solid #DCD3F9;
+    font-weight: 600;
+  }
+
+  .footer-note {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .next {
+    background: linear-gradient(120deg, #EDE7FE, #E8F0FA);
+    border-radius: 14px;
+    padding: 18px 22px;
+    border-left: 4px solid var(--purple);
+    font-size: 14px;
+    color: var(--deep-blue);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="tag">Day 4 · Core Feature Implementation</span>
+    <h1>RegionPulse Build Report</h1>
+    <p>Every feature scheduled across Blueprint Days 2–7 was implemented, tested, and verified today — dataset, cleaning pipeline, charts, filters, forecast, and insights panel.</p>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><div class="num">6</div><div class="label">Milestones completed</div></div>
+    <div class="stat"><div class="num">4</div><div class="label">Files implemented</div></div>
+    <div class="stat"><div class="num">7/7</div><div class="label">PRD features live</div></div>
+  </div>
+
+  <div class="section">
+    <h2><span class="dot"></span>Milestones Completed</h2>
+
+    <div class="milestone">
+      <div class="badge">1</div>
+      <div class="content">
+        <h3>Dataset Sourced</h3>
+        <p>Public Superstore sales dataset pulled into the project — Region, Order Date, Sales columns confirmed clean with zero nulls.</p>
+        <div class="files"><span class="filechip">data/raw/sales.csv</span></div>
+      </div>
+    </div>
+
+    <div class="milestone">
+      <div class="badge">2</div>
+      <div class="content">
+        <h3>Data Cleaning Pipeline</h3>
+        <p>Loads, standardizes, and aggregates raw sales data into analysis-ready monthly revenue per region.</p>
+        <div class="files"><span class="filechip">data_loader.py</span><span class="filechip">data/processed/clean_sales.csv</span></div>
+      </div>
+    </div>
+
+    <div class="milestone">
+      <div class="badge">3</div>
+      <div class="content">
+        <h3>Core Charts</h3>
+        <p>Revenue trend line chart and regional comparison bar chart, built with Plotly and wired into the app.</p>
+        <div class="files"><span class="filechip">charts.py</span><span class="filechip">app.py</span></div>
+      </div>
+    </div>
+
+    <div class="milestone">
+      <div class="badge">4</div>
+      <div class="content">
+        <h3>Interactive Filters</h3>
+        <p>Region multiselect and date range picker, live-updating every chart with graceful empty-state handling.</p>
+        <div class="files"><span class="filechip">data_loader.py</span><span class="filechip">app.py</span></div>
+      </div>
+    </div>
+
+    <div class="milestone">
+      <div class="badge">5</div>
+      <div class="content">
+        <h3>Forecast Engine</h3>
+        <p>Linear trend regression projecting 3 months forward per region, clipped at zero, shown as a dashed chart extension.</p>
+        <div class="files"><span class="filechip">forecast.py</span><span class="filechip">charts.py</span></div>
+      </div>
+    </div>
+
+    <div class="milestone">
+      <div class="badge">6</div>
+      <div class="content">
+        <h3>Insights Panel + Polish</h3>
+        <p>Auto-generated metrics — Top Region, Growth %, Forecasted Change % — plus final layout and caption polish.</p>
+        <div class="files"><span class="filechip">app.py</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="dot"></span>Verification Checklist</h2>
+    <ul class="checklist">
+      <li><span class="check">✓</span> App runs locally with no errors</li>
+      <li><span class="check">✓</span> Default view renders both charts + all 3 insight metrics</li>
+      <li><span class="check">✓</span> Single-region filter updates all visuals correctly</li>
+      <li><span class="check">✓</span> Narrow date ranges handled without crashing</li>
+      <li><span class="check">✓</span> Empty-selection state shows friendly warning, not an error</li>
+      <li><span class="check">✓</span> Forecast clipped at zero, clearly labeled as an estimate</li>
+      <li><span class="check">✓</span> Code matches API.md function contracts exactly</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2><span class="dot"></span>Tech Used Today</h2>
+    <div class="tags">
+      <span class="pill">Python 3.11</span>
+      <span class="pill">Streamlit</span>
+      <span class="pill">pandas</span>
+      <span class="pill">Plotly</span>
+      <span class="pill">NumPy</span>
+      <span class="pill">Git + GitHub</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="dot"></span>Next Up — Day 5</h2>
+    <div class="next">
+      Feature work is complete ahead of schedule. Day 5 shifts to a thorough testing pass and README polish, giving buffer room before deployment (Day 9) and final launch (Day 10).
+    </div>
+  </div>
+
+  <div class="footer-note">RegionPulse · AB Talks 60-Day Claude AI Challenge · Day 4 of 10</div>
+
+</div>
+</body>
+</html>
